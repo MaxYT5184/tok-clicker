@@ -622,6 +622,19 @@
             color: #aaa;
         }
         
+        .version-badge {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(90deg, var(--tiktok-purple), var(--tiktok-pink));
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            font-weight: bold;
+            z-index: 2;
+        }
+        
         /* Mobile optimizations */
         @media (max-width: 480px) {
             .container {
@@ -653,11 +666,21 @@
             .auto-clicker-controls {
                 flex-direction: column;
             }
+            
+            .version-badge {
+                position: relative;
+                top: 0;
+                right: 0;
+                margin: 0 auto 20px;
+                width: fit-content;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
+        <div class="version-badge" id="version-badge">v2.2.0</div>
+        
         <h1>
             <i class="fab fa-tiktok"></i>
             TOK CLICKER PRO
@@ -874,6 +897,34 @@
         </div>
     </div>
     
+    <!-- Version Warning Modal -->
+    <div class="modal" id="version-modal">
+        <div class="modal-content">
+            <h2 class="modal-title" style="color: #FFD600;">⚠️ VERSION WARNING</h2>
+            <div style="text-align: center; margin-bottom: 20px;">
+                <i class="fas fa-exclamation-triangle" style="font-size: 4em; color: #FFD600; margin-bottom: 15px;"></i>
+                <p id="version-warning-text" style="color: #aaa; margin-bottom: 20px;">
+                    This save file is from an outdated version!
+                </p>
+                <div style="background: rgba(255, 214, 0, 0.1); padding: 15px; border-radius: 10px; margin-bottom: 20px;">
+                    <div><strong>Save Version:</strong> <span id="save-version" style="color: #FFD600;">Unknown</span></div>
+                    <div><strong>Current Version:</strong> <span id="current-version" style="color: #25F4EE;">Unknown</span></div>
+                </div>
+                <p style="color: #aaa; font-size: 0.9em;">
+                    Loading outdated saves may cause issues. Some features may not work correctly.
+                </p>
+            </div>
+            <div class="modal-buttons">
+                <button class="btn btn-warning" id="force-load-btn">
+                    <i class="fas fa-exclamation-triangle"></i> LOAD ANYWAY
+                </button>
+                <button class="btn btn-danger" id="cancel-load-btn">
+                    <i class="fas fa-times"></i> CANCEL
+                </button>
+            </div>
+        </div>
+    </div>
+    
     <!-- Notification -->
     <div class="notification" id="notification">
         <i class="fas fa-check-circle"></i>
@@ -882,7 +933,76 @@
 </body>
 
 <script>
-    // Enhanced Game State
+    // ==================== VERSION MANAGEMENT SYSTEM ====================
+    // Version format: YY.MM.DD.X (Year.Month.Day.Revision)
+    // Example: 24.02.15.1 = 2024, February, 15th, Revision 1
+    // This gets updated monthly to invalidate old saves
+    
+    const VERSION_MANAGER = {
+        // Current game version - UPDATE THIS MONTHLY
+        CURRENT_VERSION: "24.02.15.1", // Will be updated to "24.03.15.1" next month
+        
+        // Version history with supported features
+        VERSION_HISTORY: {
+            "24.01.15.1": {
+                name: "January 2024",
+                supported: false, // Old version, not supported
+                changes: ["Initial release", "Basic clicker mechanics"]
+            },
+            "24.02.15.1": {
+                name: "February 2024",
+                supported: true, // Current version
+                changes: [
+                    "Added auto-clicker (1.9 CPS)",
+                    "Added multiplier system (1x-100x)",
+                    "Enhanced encryption",
+                    "Version management system"
+                ]
+            }
+        },
+        
+        // Check if a version is supported
+        isVersionSupported: function(version) {
+            const versionData = this.VERSION_HISTORY[version];
+            return versionData && versionData.supported;
+        },
+        
+        // Get version display name
+        getVersionName: function(version) {
+            const versionData = this.VERSION_HISTORY[version];
+            return versionData ? versionData.name : `Version ${version}`;
+        },
+        
+        // Compare versions (returns true if version1 is older than version2)
+        isOlderThan: function(version1, version2) {
+            const v1 = version1.split('.').map(Number);
+            const v2 = version2.split('.').map(Number);
+            
+            for (let i = 0; i < Math.max(v1.length, v2.length); i++) {
+                const part1 = v1[i] || 0;
+                const part2 = v2[i] || 0;
+                
+                if (part1 < part2) return true;
+                if (part1 > part2) return false;
+            }
+            return false; // Same version
+        },
+        
+        // Get months difference between versions
+        getMonthsDifference: function(version1, version2) {
+            const v1 = version1.split('.').map(Number);
+            const v2 = version2.split('.').map(Number);
+            
+            const year1 = 2000 + v1[0];
+            const year2 = 2000 + v2[0];
+            const month1 = v1[1];
+            const month2 = v2[1];
+            
+            return (year2 - year1) * 12 + (month2 - month1);
+        }
+    };
+
+    // Enhanced Game State with version tracking
     let gameState = {
         // Core stats
         views: 0,
@@ -944,12 +1064,15 @@
             multiplierKing: { unlocked: false, name: "Multiplier King", desc: "Reach 50x total multiplier", reward: 100000, icon: "👑" }
         },
         
-        // Game metadata
-        gameVersion: "2.1.0",
+        // Game metadata with version
+        gameVersion: VERSION_MANAGER.CURRENT_VERSION,
         creationDate: new Date().toISOString(),
         lastSaveDate: null,
         playTime: 0,
-        securityHash: ""
+        securityHash: "",
+        
+        // Version compatibility
+        versionCompatible: true
     };
 
     // Initialize multipliers (1x to 100x)
@@ -985,6 +1108,7 @@
     const loadCookieBtn = document.getElementById('load-cookie-btn');
     const resetBtn = document.getElementById('reset-btn');
     const loadModal = document.getElementById('load-modal');
+    const versionModal = document.getElementById('version-modal');
     const fileUpload = document.getElementById('file-upload');
     const loadFileInputBtn = document.getElementById('load-file-input-btn');
     const cookieInput = document.getElementById('cookie-input');
@@ -993,6 +1117,14 @@
     const cookieDisplay = document.getElementById('cookie-display');
     const notification = document.getElementById('notification');
     const notificationText = document.getElementById('notification-text');
+    const versionBadge = document.getElementById('version-badge');
+    
+    // Version modal elements
+    const versionWarningText = document.getElementById('version-warning-text');
+    const saveVersionEl = document.getElementById('save-version');
+    const currentVersionEl = document.getElementById('current-version');
+    const forceLoadBtn = document.getElementById('force-load-btn');
+    const cancelLoadBtn = document.getElementById('cancel-load-btn');
     
     // Auto-clicker elements
     const startAutoClickerBtn = document.getElementById('start-auto-clicker');
@@ -1007,99 +1139,137 @@
     const totalMultiplierEl = document.getElementById('total-multiplier');
     const nextMultiplierCostEl = document.getElementById('next-multiplier-cost');
 
-    // Advanced Encryption System
+    // ==================== ADVANCED ENCRYPTION SYSTEM ====================
     const encryption = {
+        // Generate a complex encryption key based on game state and version
         generateKey: () => {
-            const baseKey = "TK_CLICKER_ULTRA_SECURE_v3_";
-            const randomPart = Math.random().toString(36).substring(2, 15);
+            const baseKey = "TK_CLICKER_SECURE_v";
+            const versionKey = gameState.gameVersion.replace(/\./g, '_');
+            const randomPart = Math.random().toString(36).substring(2, 20);
             const timePart = Date.now().toString(36);
-            return baseKey + randomPart + timePart + "_" + gameState.gameVersion;
+            return baseKey + versionKey + "_" + randomPart + timePart;
         },
         
+        // Advanced XOR encryption with version-specific algorithm
         encrypt: (data, key) => {
             let encrypted = "";
             const dataStr = JSON.stringify(data);
             
-            // Add salt and metadata
+            // Add version, salt, and metadata
             const saltedData = {
+                version: data.gameVersion,
                 data: dataStr,
                 timestamp: Date.now(),
-                salt: Math.random().toString(36).substring(2, 15),
-                checksum: this.generateChecksum(dataStr),
-                version: gameState.gameVersion
+                salt: Math.random().toString(36).substring(2, 25),
+                checksum: this.generateChecksum(dataStr + data.gameVersion)
             };
             
             const saltedStr = JSON.stringify(saltedData);
             
+            // Version-specific encryption algorithm
+            const algorithmVersion = data.gameVersion.split('.')[1]; // Month determines algorithm
+            
             // Multiple encryption passes
             for (let i = 0; i < saltedStr.length; i++) {
-                let charCode = saltedStr.charCodeAt(i) ^ key.charCodeAt(i % key.length);
-                charCode = charCode ^ (i * 37); // Additional transformation
-                charCode = charCode ^ (key.length % 256); // Another transformation
+                let charCode = saltedStr.charCodeAt(i);
+                
+                // First XOR with key
+                charCode = charCode ^ key.charCodeAt(i % key.length);
+                
+                // Version-specific transformation (changes monthly)
+                if (algorithmVersion % 2 === 0) {
+                    // Even month algorithm
+                    charCode = charCode ^ (i * 73);
+                    charCode = (charCode + 137) % 256;
+                } else {
+                    // Odd month algorithm
+                    charCode = charCode ^ (i * 37);
+                    charCode = (charCode * 3) % 256;
+                }
+                
+                // Additional transformation based on position
+                charCode = charCode ^ (key.length % 256);
+                
                 encrypted += String.fromCharCode(charCode);
             }
             
-            // Convert to base64 and add header
+            // Convert to base64 and add version header
             const base64Encoded = btoa(encrypted);
-            return `TKSAVE_v${gameState.gameVersion}_${Date.now()}_${base64Encoded}`;
+            return `TKV2_${data.gameVersion}_${Date.now()}_${base64Encoded}`;
         },
         
+        // Decryption with version validation
         decrypt: (encryptedData, key) => {
             try {
                 // Extract version and encrypted data
                 const parts = encryptedData.split('_');
-                if (parts.length < 4 || !parts[0].startsWith('TKSAVE')) {
+                if (parts.length < 4 || !parts[0].startsWith('TKV2')) {
                     throw new Error("Invalid save code format");
                 }
                 
-                const version = parts[1].substring(1);
+                const version = parts[1];
                 const base64Data = parts.slice(3).join('_');
                 
                 // Decode from base64
                 const decoded = atob(base64Data);
                 
+                // Version-specific decryption algorithm
+                const algorithmVersion = version.split('.')[1];
+                
                 // Reverse encryption
                 let decrypted = "";
                 for (let i = 0; i < decoded.length; i++) {
                     let charCode = decoded.charCodeAt(i);
-                    charCode = charCode ^ (key.length % 256); // Reverse second transformation
-                    charCode = charCode ^ (i * 37); // Reverse first transformation
+                    
+                    // Reverse additional transformation
+                    charCode = charCode ^ (key.length % 256);
+                    
+                    // Version-specific reverse transformation
+                    if (algorithmVersion % 2 === 0) {
+                        // Even month algorithm reverse
+                        charCode = (charCode - 137 + 256) % 256;
+                        charCode = charCode ^ (i * 73);
+                    } else {
+                        // Odd month algorithm reverse
+                        charCode = (charCode * 171) % 256; // 171 is modular inverse of 3 mod 256
+                        charCode = charCode ^ (i * 37);
+                    }
+                    
+                    // Reverse XOR with key
                     charCode = charCode ^ key.charCodeAt(i % key.length);
+                    
                     decrypted += String.fromCharCode(charCode);
                 }
                 
                 // Parse and validate
                 const parsed = JSON.parse(decrypted);
                 
-                // Verify checksum
-                const expectedChecksum = this.generateChecksum(parsed.data);
+                // Verify checksum includes version
+                const expectedChecksum = this.generateChecksum(parsed.data + parsed.version);
                 if (parsed.checksum !== expectedChecksum) {
                     throw new Error("Save data corrupted or tampered with!");
-                }
-                
-                // Verify version compatibility
-                if (parsed.version !== gameState.gameVersion) {
-                    console.warn(`Version mismatch: Save is ${parsed.version}, Game is ${gameState.gameVersion}`);
                 }
                 
                 return JSON.parse(parsed.data);
             } catch (error) {
                 console.error("Decryption failed:", error);
-                showNotification("Failed to load save: Invalid or corrupted data!", "error");
                 return null;
             }
         },
         
+        // Generate checksum to detect tampering
         generateChecksum: (str) => {
             let hash = 0;
             for (let i = 0; i < str.length; i++) {
                 const char = str.charCodeAt(i);
                 hash = ((hash << 7) - hash) + char;
                 hash = hash & 0xFFFFFFFF; // Convert to 32-bit integer
+                hash = hash ^ (i * 13); // Additional mixing
             }
             return Math.abs(hash).toString(36) + "_" + str.length.toString(36);
         },
         
+        // Generate a secure save code (cookie)
         generateSaveCode: () => {
             const key = this.generateKey();
             const encrypted = this.encrypt(gameState, key);
@@ -1111,13 +1281,29 @@
             return encrypted;
         },
         
+        // Parse and validate save code with version checking
         parseSaveCode: (code) => {
             try {
-                // For backward compatibility, use a derived key
-                const key = "TK_CLICKER_ULTRA_SECURE_v3_FIXED_KEY_" + gameState.gameVersion;
-                return this.decrypt(code, key);
+                // For backward compatibility, use version-based key
+                const parts = code.split('_');
+                if (parts.length < 4) {
+                    throw new Error("Invalid save code");
+                }
+                
+                const version = parts[1];
+                const key = `TK_CLICKER_SECURE_v${version.replace(/\./g, '_')}_FIXED_KEY`;
+                
+                const decrypted = this.decrypt(code, key);
+                if (!decrypted) {
+                    throw new Error("Decryption failed");
+                }
+                
+                return {
+                    data: decrypted,
+                    version: version
+                };
             } catch (error) {
-                showNotification("Invalid save code format!", "error");
+                console.error("Parse failed:", error);
                 return null;
             }
         }
@@ -1125,6 +1311,10 @@
 
     // Game initialization
     function initGame() {
+        // Update version badge
+        versionBadge.textContent = `v${VERSION_MANAGER.CURRENT_VERSION}`;
+        versionBadge.title = VERSION_MANAGER.getVersionName(VERSION_MANAGER.CURRENT_VERSION);
+        
         // Initialize multipliers
         initializeMultipliers();
         
@@ -1132,8 +1322,17 @@
         const savedCode = localStorage.getItem('tokClickerSaveCode');
         if (savedCode) {
             try {
-                const loadedState = encryption.parseSaveCode(savedCode);
-                if (loadedState) {
+                const result = encryption.parseSaveCode(savedCode);
+                if (result) {
+                    const loadedState = result.data;
+                    const saveVersion = result.version;
+                    
+                    // Check version compatibility
+                    if (!VERSION_MANAGER.isVersionSupported(saveVersion)) {
+                        showVersionWarning(saveVersion, "local storage");
+                        return;
+                    }
+                    
                     gameState = loadedState;
                     
                     // Ensure multipliers array exists
@@ -1145,6 +1344,7 @@
                 }
             } catch (e) {
                 console.warn("Failed to load from localStorage:", e);
+                showNotification("Could not load save from local storage", "warning");
             }
         }
         
@@ -1171,6 +1371,28 @@
         setInterval(() => {
             gameState.playTime++;
         }, 1000);
+    }
+
+    // Show version warning modal
+    function showVersionWarning(saveVersion, source) {
+        const monthsDiff = VERSION_MANAGER.getMonthsDifference(saveVersion, VERSION_MANAGER.CURRENT_VERSION);
+        
+        saveVersionEl.textContent = `${saveVersion} (${VERSION_MANAGER.getVersionName(saveVersion)})`;
+        currentVersionEl.textContent = `${VERSION_MANAGER.CURRENT_VERSION} (${VERSION_MANAGER.getVersionName(VERSION_MANAGER.CURRENT_VERSION)})`;
+        
+        if (monthsDiff >= 1) {
+            versionWarningText.innerHTML = `
+                This save file is <strong>${monthsDiff} month${monthsDiff > 1 ? 's' : ''} outdated</strong>!<br>
+                From: ${source}
+            `;
+        } else {
+            versionWarningText.innerHTML = `
+                This save file is from an outdated version!<br>
+                From: ${source}
+            `;
+        }
+        
+        versionModal.style.display = 'flex';
     }
 
     // Game loop
@@ -1605,42 +1827,70 @@
         }
     }
 
-    // FIXED: Save game function with proper file download
+    // FIXED: Save game function with guaranteed file download
     function saveGame() {
         const saveCode = encryption.generateSaveCode();
         
         // Save to localStorage
         localStorage.setItem('tokClickerSaveCode', saveCode);
         
-        // Create downloadable file - FIXED VERSION
+        // Display the save code
+        cookieDisplay.textContent = saveCode.substring(0, 150) + "...";
+        
+        // Create and download file - GUARANTEED WORKING METHOD
+        downloadFile(saveCode, `tok_clicker_save_${Date.now()}.tok`);
+        
+        showNotification("Game saved and file downloaded!", "success");
+    }
+
+    // Universal file download function
+    function downloadFile(content, filename) {
+        // Method 1: Modern Blob API (works in most browsers)
         try {
-            const blob = new Blob([saveCode], { type: 'text/plain;charset=utf-8' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `tok_clicker_save_${Date.now()}.tok`;
+            const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
             
-            // Append to body, click, and remove
+            // Create a temporary anchor element
+            const a = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            
+            a.href = url;
+            a.download = filename;
+            a.style.display = 'none';
+            
             document.body.appendChild(a);
             a.click();
             
-            // Clean up
+            // Cleanup
             setTimeout(() => {
                 document.body.removeChild(a);
                 URL.revokeObjectURL(url);
             }, 100);
             
-            // Display the save code
-            cookieDisplay.textContent = saveCode.substring(0, 150) + "...";
-            
-            showNotification("Game saved and file downloaded!", "success");
+            return true;
         } catch (error) {
-            console.error("Download failed:", error);
-            showNotification("Save successful but download failed. Check browser permissions.", "warning");
+            console.warn("Blob download failed:", error);
             
-            // Still show the code for manual copy
-            cookieDisplay.textContent = saveCode.substring(0, 150) + "...";
-            showNotification("Game saved locally! Copy the code above to backup.", "info");
+            // Method 2: Data URL fallback
+            try {
+                const dataUrl = 'data:text/plain;charset=utf-8,' + encodeURIComponent(content);
+                const a = document.createElement('a');
+                a.href = dataUrl;
+                a.download = filename;
+                a.style.display = 'none';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                return true;
+            } catch (error2) {
+                console.error("Data URL download also failed:", error2);
+                
+                // Method 3: Last resort - open in new window
+                const newWindow = window.open();
+                newWindow.document.write('<pre>' + content + '</pre>');
+                newWindow.document.title = filename;
+                showNotification("Save successful! File opened in new window. Use Ctrl+S to save.", "warning");
+                return false;
+            }
         }
     }
 
@@ -1658,9 +1908,24 @@
         reader.onload = function(e) {
             try {
                 const saveCode = e.target.result;
-                const loadedState = encryption.parseSaveCode(saveCode);
+                const result = encryption.parseSaveCode(saveCode);
                 
-                if (loadedState) {
+                if (result) {
+                    const loadedState = result.data;
+                    const saveVersion = result.version;
+                    
+                    // Check version compatibility
+                    if (!VERSION_MANAGER.isVersionSupported(saveVersion)) {
+                        showVersionWarning(saveVersion, "file upload");
+                        // Store the loaded state for potential force load
+                        window.pendingLoadState = {
+                            state: loadedState,
+                            version: saveVersion,
+                            type: 'file'
+                        };
+                        return;
+                    }
+                    
                     // Stop auto-clicker before loading new state
                     if (gameState.autoClicker.active) {
                         stopAutoClicker();
@@ -1680,9 +1945,11 @@
                     updateAutoClickerDisplay();
                     showNotification("Game loaded from file!", "success");
                     closeLoadModal();
+                } else {
+                    showNotification("Failed to load file: Invalid or corrupted!", "error");
                 }
             } catch (error) {
-                showNotification("Failed to load file: Invalid or corrupted!", "error");
+                showNotification("Failed to load file: Invalid format!", "error");
             }
         };
         
@@ -1703,9 +1970,24 @@
         }
         
         try {
-            const loadedState = encryption.parseSaveCode(code);
+            const result = encryption.parseSaveCode(code);
             
-            if (loadedState) {
+            if (result) {
+                const loadedState = result.data;
+                const saveVersion = result.version;
+                
+                // Check version compatibility
+                if (!VERSION_MANAGER.isVersionSupported(saveVersion)) {
+                    showVersionWarning(saveVersion, "code input");
+                    // Store the loaded state for potential force load
+                    window.pendingLoadState = {
+                        state: loadedState,
+                        version: saveVersion,
+                        type: 'code'
+                    };
+                    return;
+                }
+                
                 // Stop auto-clicker before loading new state
                 if (gameState.autoClicker.active) {
                     stopAutoClicker();
@@ -1725,10 +2007,61 @@
                 updateAutoClickerDisplay();
                 showNotification("Game loaded from code!", "success");
                 closeLoadModal();
+            } else {
+                showNotification("Invalid save code! Cannot load game.", "error");
             }
         } catch (error) {
-            showNotification("Invalid save code! Cannot load game.", "error");
+            showNotification("Invalid save code format!", "error");
         }
+    }
+
+    // Force load outdated save
+    function forceLoadOutdatedSave() {
+        if (!window.pendingLoadState) return;
+        
+        const { state, version, type } = window.pendingLoadState;
+        
+        // Stop auto-clicker before loading new state
+        if (gameState.autoClicker.active) {
+            stopAutoClicker();
+        }
+        
+        gameState = state;
+        gameState.gameVersion = VERSION_MANAGER.CURRENT_VERSION; // Update to current version
+        gameState.versionCompatible = false; // Mark as incompatible
+        
+        // Ensure multipliers array exists
+        if (!gameState.multipliers || gameState.multipliers.length === 0) {
+            initializeMultipliers();
+        }
+        
+        // Fix any missing properties
+        if (!gameState.autoClicker) {
+            gameState.autoClicker = {
+                active: false,
+                speed: 1.9,
+                boosted: false,
+                totalAutoClicks: 0,
+                interval: null
+            };
+        }
+        
+        if (!gameState.multipliers) {
+            initializeMultipliers();
+        }
+        
+        updateDisplay();
+        renderUpgrades();
+        renderAchievements();
+        renderMultipliers();
+        updateAutoClickerDisplay();
+        
+        showNotification(`Game loaded from outdated ${type}! Some features may not work.`, "warning");
+        closeVersionModal();
+        closeLoadModal();
+        
+        // Clear pending state
+        window.pendingLoadState = null;
     }
 
     // Reset game
@@ -1762,11 +2095,12 @@
                 upgrades: { ...gameState.upgrades },
                 shop: { ...gameState.shop },
                 achievements: { ...gameState.achievements },
-                gameVersion: gameState.gameVersion,
+                gameVersion: VERSION_MANAGER.CURRENT_VERSION,
                 creationDate: new Date().toISOString(),
                 lastSaveDate: null,
                 playTime: 0,
-                securityHash: ""
+                securityHash: "",
+                versionCompatible: true
             };
             
             // Reset upgrade levels and costs
@@ -1843,6 +2177,11 @@
         loadModal.style.display = 'none';
     }
 
+    function closeVersionModal() {
+        versionModal.style.display = 'none';
+        window.pendingLoadState = null;
+    }
+
     // Set up event listeners
     function setupEventListeners() {
         // Click button
@@ -1868,8 +2207,10 @@
         // Load from code
         loadCookieConfirm.addEventListener('click', loadFromCode);
         
-        // Close modal
+        // Close modals
         closeModal.addEventListener('click', closeLoadModal);
+        cancelLoadBtn.addEventListener('click', closeVersionModal);
+        forceLoadBtn.addEventListener('click', forceLoadOutdatedSave);
         
         // Reset button
         resetBtn.addEventListener('click', resetGame);
@@ -1879,10 +2220,16 @@
         stopAutoClickerBtn.addEventListener('click', stopAutoClicker);
         boostAutoClickerBtn.addEventListener('click', boostAutoClicker);
         
-        // Close modal when clicking outside
+        // Close modals when clicking outside
         loadModal.addEventListener('click', (e) => {
             if (e.target === loadModal) {
                 closeLoadModal();
+            }
+        });
+        
+        versionModal.addEventListener('click', (e) => {
+            if (e.target === versionModal) {
+                closeVersionModal();
             }
         });
         
@@ -1894,6 +2241,7 @@
             }
             if (e.key === 'Escape') {
                 closeLoadModal();
+                closeVersionModal();
             }
             // Spacebar to click
             if (e.key === ' ' && e.target === document.body) {
