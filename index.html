@@ -34,7 +34,7 @@
         }
         
         .container {
-            max-width: 900px;
+            max-width: 1000px;
             width: 100%;
             background-color: rgba(20, 20, 20, 0.95);
             border-radius: 25px;
@@ -346,9 +346,20 @@
             color: white;
         }
         
+        .btn-success {
+            background: linear-gradient(90deg, #00b09b, #96c93d);
+            color: white;
+        }
+        
         .btn:hover {
             transform: scale(1.05);
             box-shadow: 0 5px 20px rgba(255, 255, 255, 0.2);
+        }
+        
+        .btn-small {
+            padding: 8px 15px;
+            min-width: auto;
+            font-size: 0.9em;
         }
         
         .modal {
@@ -527,6 +538,90 @@
             transition: width 0.5s;
         }
         
+        .auto-clicker-section {
+            margin: 30px 0;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 20px;
+            padding: 25px;
+            border: 2px solid var(--tiktok-yellow);
+        }
+        
+        .auto-clicker-controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        
+        .multiplier-section {
+            margin: 30px 0;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 20px;
+            padding: 25px;
+            border: 2px solid var(--tiktok-teal);
+        }
+        
+        .multiplier-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .multiplier-btn {
+            padding: 10px;
+            background: linear-gradient(145deg, rgba(37, 244, 238, 0.2), rgba(254, 44, 85, 0.2));
+            border: 2px solid var(--tiktok-purple);
+            border-radius: 10px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+        }
+        
+        .multiplier-btn:hover {
+            transform: scale(1.05);
+            background: linear-gradient(145deg, rgba(37, 244, 238, 0.4), rgba(254, 44, 85, 0.4));
+        }
+        
+        .multiplier-btn.active {
+            background: linear-gradient(145deg, var(--tiktok-teal), var(--tiktok-pink));
+            box-shadow: 0 0 15px rgba(254, 44, 85, 0.7);
+        }
+        
+        .multiplier-btn.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+        
+        .clicker-status {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+        }
+        
+        .status-item {
+            text-align: center;
+        }
+        
+        .status-value {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: var(--tiktok-yellow);
+        }
+        
+        .status-label {
+            font-size: 0.9em;
+            color: #aaa;
+        }
+        
         /* Mobile optimizations */
         @media (max-width: 480px) {
             .container {
@@ -550,6 +645,14 @@
             .upgrades-grid, .achievements-grid, .shop-items {
                 grid-template-columns: 1fr;
             }
+            
+            .multiplier-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+            
+            .auto-clicker-controls {
+                flex-direction: column;
+            }
         }
     </style>
 </head>
@@ -557,7 +660,7 @@
     <div class="container">
         <h1>
             <i class="fab fa-tiktok"></i>
-            TOK CLICKER
+            TOK CLICKER PRO
             <div class="header-icons">
                 <i class="fas fa-music"></i>
                 <i class="fas fa-video"></i>
@@ -622,6 +725,58 @@
             <div>Daily Streak: <span id="streak-days">0/7</span> days</div>
         </div>
         
+        <!-- FREE AUTO-CLICKER SECTION -->
+        <div class="auto-clicker-section">
+            <h2 class="section-title"><i class="fas fa-robot"></i> FREE AUTO-CLICKER</h2>
+            <p style="text-align: center; margin-bottom: 20px; color: #aaa;">
+                Free auto-clicker that clicks at 1.9 clicks per second! Works while tab is active.
+            </p>
+            <div class="auto-clicker-controls">
+                <button class="btn btn-success" id="start-auto-clicker">
+                    <i class="fas fa-play"></i> START AUTO-CLICKER (FREE)
+                </button>
+                <button class="btn btn-danger" id="stop-auto-clicker">
+                    <i class="fas fa-stop"></i> STOP AUTO-CLICKER
+                </button>
+                <button class="btn btn-secondary" id="boost-auto-clicker">
+                    <i class="fas fa-bolt"></i> BOOST TO 3.8 CPS (100 coins)
+                </button>
+            </div>
+            <div class="clicker-status">
+                <div class="status-item">
+                    <div class="status-label">AUTO-CLICKER</div>
+                    <div id="auto-clicker-status" class="status-value">OFF</div>
+                </div>
+                <div class="status-item">
+                    <div class="status-label">SPEED</div>
+                    <div id="auto-clicker-speed" class="status-value">1.9 CPS</div>
+                </div>
+                <div class="status-item">
+                    <div class="status-label">TOTAL AUTO-CLICKS</div>
+                    <div id="total-auto-clicks" class="status-value">0</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- MULTIPLIER SECTION -->
+        <div class="multiplier-section">
+            <h2 class="section-title"><i class="fas fa-chart-line"></i> MULTIPLIER UPGRADES</h2>
+            <p style="text-align: center; margin-bottom: 20px; color: #aaa;">
+                Buy permanent multipliers to multiply ALL your earnings! (Cost increases with level)
+            </p>
+            <div class="multiplier-grid" id="multiplier-container">
+                <!-- Multipliers will be generated here -->
+            </div>
+            <div style="text-align: center; margin-top: 20px;">
+                <div style="color: var(--tiktok-yellow); font-weight: bold;">
+                    Current Total Multiplier: <span id="total-multiplier">1.00x</span>
+                </div>
+                <div style="color: #aaa; margin-top: 10px;">
+                    Next Multiplier Cost: <span id="next-multiplier-cost">100</span> coins
+                </div>
+            </div>
+        </div>
+        
         <div class="upgrades-section">
             <h2 class="section-title"><i class="fas fa-arrow-up"></i> UPGRADES</h2>
             <div class="upgrades-grid" id="upgrades-container">
@@ -637,21 +792,28 @@
                     <div class="upgrade-name">Effects Pack</div>
                     <div class="upgrade-desc">Unlock special click effects</div>
                     <div class="upgrade-cost">Cost: 1,000 coins</div>
-                    <button class="btn btn-secondary" onclick="buyShopItem('effects')">BUY</button>
+                    <button class="btn btn-secondary btn-small" onclick="buyShopItem('effects')">BUY</button>
                 </div>
                 <div class="shop-item">
                     <div class="shop-item-icon">🌈</div>
                     <div class="upgrade-name">Rainbow Theme</div>
                     <div class="upgrade-desc">Change the game colors</div>
                     <div class="upgrade-cost">Cost: 5,000 coins</div>
-                    <button class="btn btn-secondary" onclick="buyShopItem('theme')">BUY</button>
+                    <button class="btn btn-secondary btn-small" onclick="buyShopItem('theme')">BUY</button>
                 </div>
                 <div class="shop-item">
                     <div class="shop-item-icon">⚡</div>
-                    <div class="upgrade-name">Auto-Clicker</div>
-                    <div class="upgrade-desc">Clicks automatically for 30 seconds</div>
+                    <div class="upgrade-name">Auto-Clicker Boost</div>
+                    <div class="upgrade-desc">Double auto-clicker speed for 1 hour</div>
                     <div class="upgrade-cost">Cost: 500 coins</div>
-                    <button class="btn btn-secondary" onclick="buyShopItem('autoclicker')">BUY</button>
+                    <button class="btn btn-secondary btn-small" onclick="buyShopItem('autoclicker')">BUY</button>
+                </div>
+                <div class="shop-item">
+                    <div class="shop-item-icon">💎</div>
+                    <div class="upgrade-name">Premium Multiplier</div>
+                    <div class="upgrade-desc">+0.5x to all multipliers</div>
+                    <div class="upgrade-cost">Cost: 10,000 coins</div>
+                    <button class="btn btn-secondary btn-small" onclick="buyShopItem('premium')">BUY</button>
                 </div>
             </div>
         </div>
@@ -671,7 +833,7 @@
             
             <div class="save-load-buttons">
                 <button class="btn btn-primary" id="save-btn">
-                    <i class="fas fa-download"></i> SAVE GAME
+                    <i class="fas fa-download"></i> SAVE GAME & DOWNLOAD FILE
                 </button>
                 <button class="btn btn-secondary" id="load-file-btn">
                     <i class="fas fa-upload"></i> LOAD FROM FILE
@@ -701,7 +863,7 @@
                 <button class="btn btn-primary" id="load-file-input-btn">
                     <i class="fas fa-file-upload"></i> Upload Save File
                 </button>
-                <input type="file" id="file-upload" accept=".txt,.tok" style="display: none;">
+                <input type="file" id="file-upload" accept=".tok,.txt" style="display: none;">
                 <div style="text-align: center; color: #aaa;">OR</div>
                 <textarea class="modal-input" id="cookie-input" placeholder="Paste your save code here..." rows="5"></textarea>
                 <div class="modal-buttons">
@@ -720,7 +882,7 @@
 </body>
 
 <script>
-    // Advanced Game State with more properties
+    // Enhanced Game State
     let gameState = {
         // Core stats
         views: 0,
@@ -733,6 +895,18 @@
         lastPlayDate: null,
         multiplier: 1,
         totalClicks: 0,
+        
+        // Auto-clicker system
+        autoClicker: {
+            active: false,
+            speed: 1.9, // Clicks per second
+            boosted: false,
+            totalAutoClicks: 0,
+            interval: null
+        },
+        
+        // Multiplier system (1x to 100x)
+        multipliers: [],
         
         // Upgrades system
         upgrades: {
@@ -752,7 +926,8 @@
         shop: {
             effects: { bought: false, cost: 1000, name: "Effects Pack" },
             theme: { bought: false, cost: 5000, name: "Rainbow Theme" },
-            autoclicker: { bought: false, cost: 500, name: "Auto-Clicker", active: false, duration: 0 }
+            autoclicker: { bought: false, cost: 500, name: "Auto-Clicker Boost" },
+            premium: { bought: false, cost: 10000, name: "Premium Multiplier" }
         },
         
         // Achievements system
@@ -764,16 +939,31 @@
             influencer: { unlocked: false, name: "Influencer", desc: "Get 10,000 followers", reward: 50000, icon: "🌟" },
             millionaire: { unlocked: false, name: "Millionaire", desc: "Get 1,000,000 followers", reward: 250000, icon: "💎" },
             clickMaster: { unlocked: false, name: "Click Master", desc: "Make 10,000 clicks", reward: 10000, icon: "⚡" },
-            dailyPlayer: { unlocked: false, name: "Daily Player", desc: "Play for 7 days straight", reward: 15000, icon: "📅" }
+            dailyPlayer: { unlocked: false, name: "Daily Player", desc: "Play for 7 days straight", reward: 15000, icon: "📅" },
+            autoClickerPro: { unlocked: false, name: "Auto-Clicker Pro", desc: "Make 100,000 auto-clicks", reward: 50000, icon: "🤖" },
+            multiplierKing: { unlocked: false, name: "Multiplier King", desc: "Reach 50x total multiplier", reward: 100000, icon: "👑" }
         },
         
         // Game metadata
-        gameVersion: "2.0.1",
+        gameVersion: "2.1.0",
         creationDate: new Date().toISOString(),
         lastSaveDate: null,
         playTime: 0,
         securityHash: ""
     };
+
+    // Initialize multipliers (1x to 100x)
+    function initializeMultipliers() {
+        gameState.multipliers = [];
+        for (let i = 1; i <= 100; i++) {
+            gameState.multipliers.push({
+                level: i,
+                bought: i === 1, // 1x is free
+                cost: Math.floor(100 * Math.pow(1.3, i - 1)), // Exponential cost increase
+                multiplier: i
+            });
+        }
+    }
 
     // DOM Elements
     const viewsEl = document.getElementById('views');
@@ -803,18 +993,29 @@
     const cookieDisplay = document.getElementById('cookie-display');
     const notification = document.getElementById('notification');
     const notificationText = document.getElementById('notification-text');
+    
+    // Auto-clicker elements
+    const startAutoClickerBtn = document.getElementById('start-auto-clicker');
+    const stopAutoClickerBtn = document.getElementById('stop-auto-clicker');
+    const boostAutoClickerBtn = document.getElementById('boost-auto-clicker');
+    const autoClickerStatusEl = document.getElementById('auto-clicker-status');
+    const autoClickerSpeedEl = document.getElementById('auto-clicker-speed');
+    const totalAutoClicksEl = document.getElementById('total-auto-clicks');
+    
+    // Multiplier elements
+    const multiplierContainer = document.getElementById('multiplier-container');
+    const totalMultiplierEl = document.getElementById('total-multiplier');
+    const nextMultiplierCostEl = document.getElementById('next-multiplier-cost');
 
     // Advanced Encryption System
     const encryption = {
-        // Generate a complex encryption key based on game state
         generateKey: () => {
-            const baseKey = "TK_CLICKER_ULTRA_SECURE_v2_";
+            const baseKey = "TK_CLICKER_ULTRA_SECURE_v3_";
             const randomPart = Math.random().toString(36).substring(2, 15);
             const timePart = Date.now().toString(36);
             return baseKey + randomPart + timePart + "_" + gameState.gameVersion;
         },
         
-        // Advanced XOR encryption with multiple passes
         encrypt: (data, key) => {
             let encrypted = "";
             const dataStr = JSON.stringify(data);
@@ -824,37 +1025,45 @@
                 data: dataStr,
                 timestamp: Date.now(),
                 salt: Math.random().toString(36).substring(2, 15),
-                checksum: this.generateChecksum(dataStr)
+                checksum: this.generateChecksum(dataStr),
+                version: gameState.gameVersion
             };
             
             const saltedStr = JSON.stringify(saltedData);
             
             // Multiple encryption passes
-            for (let i = 0; i < key.length; i++) {
-                let charCode = saltedStr.charCodeAt(i % saltedStr.length) ^ key.charCodeAt(i % key.length);
+            for (let i = 0; i < saltedStr.length; i++) {
+                let charCode = saltedStr.charCodeAt(i) ^ key.charCodeAt(i % key.length);
                 charCode = charCode ^ (i * 37); // Additional transformation
+                charCode = charCode ^ (key.length % 256); // Another transformation
                 encrypted += String.fromCharCode(charCode);
             }
             
-            // Convert to base64 for additional obfuscation
-            return btoa(encrypted + "||" + key.substring(0, 10));
+            // Convert to base64 and add header
+            const base64Encoded = btoa(encrypted);
+            return `TKSAVE_v${gameState.gameVersion}_${Date.now()}_${base64Encoded}`;
         },
         
-        // Decryption with validation
         decrypt: (encryptedData, key) => {
             try {
+                // Extract version and encrypted data
+                const parts = encryptedData.split('_');
+                if (parts.length < 4 || !parts[0].startsWith('TKSAVE')) {
+                    throw new Error("Invalid save code format");
+                }
+                
+                const version = parts[1].substring(1);
+                const base64Data = parts.slice(3).join('_');
+                
                 // Decode from base64
-                const decoded = atob(encryptedData);
-                const parts = decoded.split("||");
-                
-                if (parts.length !== 2) throw new Error("Invalid save format");
-                
-                let decrypted = "";
-                const dataPart = parts[0];
+                const decoded = atob(base64Data);
                 
                 // Reverse encryption
-                for (let i = 0; i < dataPart.length; i++) {
-                    let charCode = dataPart.charCodeAt(i) ^ (i * 37); // Reverse transformation
+                let decrypted = "";
+                for (let i = 0; i < decoded.length; i++) {
+                    let charCode = decoded.charCodeAt(i);
+                    charCode = charCode ^ (key.length % 256); // Reverse second transformation
+                    charCode = charCode ^ (i * 37); // Reverse first transformation
                     charCode = charCode ^ key.charCodeAt(i % key.length);
                     decrypted += String.fromCharCode(charCode);
                 }
@@ -868,6 +1077,11 @@
                     throw new Error("Save data corrupted or tampered with!");
                 }
                 
+                // Verify version compatibility
+                if (parsed.version !== gameState.gameVersion) {
+                    console.warn(`Version mismatch: Save is ${parsed.version}, Game is ${gameState.gameVersion}`);
+                }
+                
                 return JSON.parse(parsed.data);
             } catch (error) {
                 console.error("Decryption failed:", error);
@@ -876,53 +1090,44 @@
             }
         },
         
-        // Generate checksum to detect tampering
         generateChecksum: (str) => {
             let hash = 0;
             for (let i = 0; i < str.length; i++) {
                 const char = str.charCodeAt(i);
-                hash = ((hash << 5) - hash) + char;
-                hash = hash & hash; // Convert to 32-bit integer
+                hash = ((hash << 7) - hash) + char;
+                hash = hash & 0xFFFFFFFF; // Convert to 32-bit integer
             }
-            return Math.abs(hash).toString(36);
+            return Math.abs(hash).toString(36) + "_" + str.length.toString(36);
         },
         
-        // Generate a secure save code (cookie)
         generateSaveCode: () => {
             const key = this.generateKey();
             const encrypted = this.encrypt(gameState, key);
             
-            // Add version and security headers
-            const fullCode = `TKSAVE_v${gameState.gameVersion}_${Date.now()}_${encrypted}`;
-            
             // Update game state with security hash
-            gameState.securityHash = this.generateChecksum(fullCode);
+            gameState.securityHash = this.generateChecksum(encrypted);
             gameState.lastSaveDate = new Date().toISOString();
             
-            return fullCode;
+            return encrypted;
         },
         
-        // Parse and validate save code
         parseSaveCode: (code) => {
-            // Extract version and encrypted data
-            const parts = code.split('_');
-            if (parts.length < 4 || !parts[0].startsWith('TKSAVE')) {
-                throw new Error("Invalid save code format");
+            try {
+                // For backward compatibility, use a derived key
+                const key = "TK_CLICKER_ULTRA_SECURE_v3_FIXED_KEY_" + gameState.gameVersion;
+                return this.decrypt(code, key);
+            } catch (error) {
+                showNotification("Invalid save code format!", "error");
+                return null;
             }
-            
-            const version = parts[1].substring(1);
-            const encryptedData = parts.slice(3).join('_');
-            
-            // For simplicity, we'll use a fixed key for decryption
-            // In a real implementation, you'd have a more sophisticated key management system
-            const key = "TK_CLICKER_ULTRA_SECURE_v2_FIXED_KEY_" + version;
-            
-            return this.decrypt(encryptedData, key);
         }
     };
 
     // Game initialization
     function initGame() {
+        // Initialize multipliers
+        initializeMultipliers();
+        
         // Try to load from localStorage first
         const savedCode = localStorage.getItem('tokClickerSaveCode');
         if (savedCode) {
@@ -930,6 +1135,12 @@
                 const loadedState = encryption.parseSaveCode(savedCode);
                 if (loadedState) {
                     gameState = loadedState;
+                    
+                    // Ensure multipliers array exists
+                    if (!gameState.multipliers || gameState.multipliers.length === 0) {
+                        initializeMultipliers();
+                    }
+                    
                     showNotification("Game loaded from local storage!", "success");
                 }
             } catch (e) {
@@ -947,12 +1158,14 @@
         updateDisplay();
         renderUpgrades();
         renderAchievements();
+        renderMultipliers();
+        updateAutoClickerDisplay();
         
         // Set up event listeners
         setupEventListeners();
         
         // Start auto-save interval
-        setInterval(autoSave, 30000); // Auto-save every 30 seconds
+        setInterval(autoSave, 30000);
         
         // Initialize game time tracking
         setInterval(() => {
@@ -963,10 +1176,7 @@
     // Game loop
     function gameLoop() {
         // Passive income
-        gameState.views += gameState.viewsPerSecond * gameState.multiplier;
-        
-        // Update shop items
-        updateShopItems();
+        gameState.views += gameState.viewsPerSecond * calculateTotalMultiplier();
         
         // Update display
         updateDisplay();
@@ -995,17 +1205,18 @@
         }, 800);
         
         // Add views with multiplier
-        const viewsGained = gameState.viewsPerClick * gameState.multiplier;
+        const totalMultiplier = calculateTotalMultiplier();
+        const viewsGained = gameState.viewsPerClick * totalMultiplier;
         gameState.views += viewsGained;
         gameState.totalClicks++;
         
         // Random chance for followers and coins
         if (Math.random() < 0.15) {
-            gameState.followers += Math.floor(gameState.multiplier);
+            gameState.followers += Math.floor(totalMultiplier);
         }
         
         if (Math.random() < 0.05) {
-            gameState.coins += Math.floor(gameState.multiplier * 2);
+            gameState.coins += Math.floor(totalMultiplier * 2);
         }
         
         // Update display
@@ -1015,21 +1226,50 @@
         checkAchievements();
     }
 
+    // Calculate total multiplier from all sources
+    function calculateTotalMultiplier() {
+        let total = gameState.multiplier;
+        
+        // Add shop premium multiplier
+        if (gameState.shop.premium.bought) {
+            total += 0.5;
+        }
+        
+        // Add purchased multipliers
+        const purchasedMultipliers = gameState.multipliers.filter(m => m.bought);
+        purchasedMultipliers.forEach(m => {
+            total *= m.multiplier;
+        });
+        
+        return total;
+    }
+
     // Update all display elements
     function updateDisplay() {
+        const totalMultiplier = calculateTotalMultiplier();
+        
         viewsEl.textContent = formatNumber(gameState.views);
-        viewsPerClickEl.textContent = formatNumber(gameState.viewsPerClick * gameState.multiplier);
-        viewsPerSecondEl.textContent = formatNumber(gameState.viewsPerSecond * gameState.multiplier);
+        viewsPerClickEl.textContent = formatNumber(gameState.viewsPerClick * totalMultiplier);
+        viewsPerSecondEl.textContent = formatNumber(gameState.viewsPerSecond * totalMultiplier);
         followersEl.textContent = formatNumber(gameState.followers);
         coinsEl.textContent = formatNumber(gameState.coins);
         prestigeEl.textContent = gameState.prestige;
         streakEl.textContent = gameState.streak;
-        multiplierEl.textContent = gameState.multiplier.toFixed(2) + 'x';
+        multiplierEl.textContent = totalMultiplier.toFixed(2) + 'x';
+        totalMultiplierEl.textContent = totalMultiplier.toFixed(2) + 'x';
         
         // Update streak progress
         const progress = (gameState.streak % 7) * (100 / 7);
         streakProgressEl.style.width = progress + '%';
         streakDaysEl.textContent = (gameState.streak % 7) + '/7';
+        
+        // Update next multiplier cost
+        const nextMultiplier = gameState.multipliers.find(m => !m.bought);
+        if (nextMultiplier) {
+            nextMultiplierCostEl.textContent = formatNumber(nextMultiplier.cost);
+        } else {
+            nextMultiplierCostEl.textContent = "MAX";
+        }
     }
 
     // Format numbers with abbreviations
@@ -1085,6 +1325,159 @@
             renderUpgrades();
             showNotification(`Purchased ${upgrade.name} level ${upgrade.level}!`, "success");
         }
+    }
+
+    // Render multipliers (1x to 100x)
+    function renderMultipliers() {
+        multiplierContainer.innerHTML = '';
+        
+        gameState.multipliers.forEach((multiplier, index) => {
+            const multiplierBtn = document.createElement('button');
+            multiplierBtn.className = `multiplier-btn ${multiplier.bought ? 'active' : ''} ${!multiplier.bought && gameState.coins < multiplier.cost ? 'disabled' : ''}`;
+            multiplierBtn.textContent = `${multiplier.level}x`;
+            multiplierBtn.title = `Cost: ${formatNumber(multiplier.cost)} coins`;
+            
+            if (!multiplier.bought && gameState.coins >= multiplier.cost) {
+                multiplierBtn.style.cursor = 'pointer';
+                multiplierBtn.onclick = () => purchaseMultiplier(index);
+            } else if (!multiplier.bought) {
+                multiplierBtn.style.cursor = 'not-allowed';
+            }
+            
+            multiplierContainer.appendChild(multiplierBtn);
+        });
+    }
+
+    // Purchase multiplier
+    function purchaseMultiplier(index) {
+        const multiplier = gameState.multipliers[index];
+        
+        if (!multiplier.bought && gameState.coins >= multiplier.cost) {
+            gameState.coins -= multiplier.cost;
+            multiplier.bought = true;
+            
+            updateDisplay();
+            renderMultipliers();
+            showNotification(`Purchased ${multiplier.level}x multiplier!`, "success");
+            
+            // Check achievement
+            checkMultiplierAchievement();
+        }
+    }
+
+    // Check multiplier achievement
+    function checkMultiplierAchievement() {
+        const totalMultiplier = calculateTotalMultiplier();
+        if (totalMultiplier >= 50 && !gameState.achievements.multiplierKing.unlocked) {
+            gameState.achievements.multiplierKing.unlocked = true;
+            gameState.coins += gameState.achievements.multiplierKing.reward;
+            renderAchievements();
+            showNotification("Achievement unlocked: Multiplier King!", "success");
+        }
+    }
+
+    // Auto-clicker functions
+    function startAutoClicker() {
+        if (gameState.autoClicker.active) return;
+        
+        gameState.autoClicker.active = true;
+        gameState.autoClicker.interval = setInterval(() => {
+            // Simulate a click
+            const totalMultiplier = calculateTotalMultiplier();
+            const viewsGained = gameState.viewsPerClick * totalMultiplier;
+            gameState.views += viewsGained;
+            gameState.totalClicks++;
+            gameState.autoClicker.totalAutoClicks++;
+            
+            // Random rewards
+            if (Math.random() < 0.1) {
+                gameState.followers += Math.floor(totalMultiplier);
+            }
+            if (Math.random() < 0.02) {
+                gameState.coins += Math.floor(totalMultiplier);
+            }
+            
+            updateDisplay();
+            updateAutoClickerDisplay();
+            
+            // Check auto-clicker achievement
+            if (gameState.autoClicker.totalAutoClicks >= 100000 && !gameState.achievements.autoClickerPro.unlocked) {
+                gameState.achievements.autoClickerPro.unlocked = true;
+                gameState.coins += gameState.achievements.autoClickerPro.reward;
+                renderAchievements();
+                showNotification("Achievement unlocked: Auto-Clicker Pro!", "success");
+            }
+            
+        }, 1000 / gameState.autoClicker.speed); // Convert CPS to interval
+        
+        updateAutoClickerDisplay();
+        showNotification("Auto-clicker started! (" + gameState.autoClicker.speed + " CPS)", "success");
+    }
+
+    function stopAutoClicker() {
+        if (!gameState.autoClicker.active) return;
+        
+        gameState.autoClicker.active = false;
+        if (gameState.autoClicker.interval) {
+            clearInterval(gameState.autoClicker.interval);
+            gameState.autoClicker.interval = null;
+        }
+        
+        updateAutoClickerDisplay();
+        showNotification("Auto-clicker stopped!", "info");
+    }
+
+    function boostAutoClicker() {
+        if (gameState.autoClicker.boosted) {
+            showNotification("Auto-clicker already boosted!", "warning");
+            return;
+        }
+        
+        if (gameState.coins >= 100) {
+            gameState.coins -= 100;
+            gameState.autoClicker.speed = 3.8; // Double speed
+            gameState.autoClicker.boosted = true;
+            
+            // Restart auto-clicker with new speed
+            if (gameState.autoClicker.active) {
+                stopAutoClicker();
+                startAutoClicker();
+            }
+            
+            updateDisplay();
+            updateAutoClickerDisplay();
+            showNotification("Auto-clicker boosted to 3.8 CPS for 1 hour!", "success");
+            
+            // Reset boost after 1 hour
+            setTimeout(() => {
+                if (gameState.autoClicker.boosted) {
+                    gameState.autoClicker.speed = 1.9;
+                    gameState.autoClicker.boosted = false;
+                    
+                    if (gameState.autoClicker.active) {
+                        stopAutoClicker();
+                        startAutoClicker();
+                    }
+                    
+                    updateAutoClickerDisplay();
+                    showNotification("Auto-clicker boost expired!", "info");
+                }
+            }, 60 * 60 * 1000); // 1 hour
+        } else {
+            showNotification("Need 100 coins to boost auto-clicker!", "error");
+        }
+    }
+
+    function updateAutoClickerDisplay() {
+        autoClickerStatusEl.textContent = gameState.autoClicker.active ? "ON" : "OFF";
+        autoClickerStatusEl.style.color = gameState.autoClicker.active ? "#00FF00" : "#FF0000";
+        autoClickerSpeedEl.textContent = gameState.autoClicker.speed.toFixed(1) + " CPS";
+        totalAutoClicksEl.textContent = formatNumber(gameState.autoClicker.totalAutoClicks);
+        
+        // Update button states
+        startAutoClickerBtn.disabled = gameState.autoClicker.active;
+        stopAutoClickerBtn.disabled = !gameState.autoClicker.active;
+        boostAutoClickerBtn.disabled = gameState.autoClicker.boosted;
     }
 
     // Render achievements
@@ -1190,18 +1583,6 @@
         gameState.multiplier = 1 + (gameState.streak * 0.05);
     }
 
-    // Update shop items
-    function updateShopItems() {
-        // Update auto-clicker if active
-        if (gameState.shop.autoclicker.active) {
-            gameState.shop.autoclicker.duration--;
-            if (gameState.shop.autoclicker.duration <= 0) {
-                gameState.shop.autoclicker.active = false;
-                showNotification("Auto-clicker expired!", "info");
-            }
-        }
-    }
-
     // Buy shop item
     function buyShopItem(item) {
         const shopItem = gameState.shop[item];
@@ -1210,10 +1591,8 @@
             gameState.coins -= shopItem.cost;
             shopItem.bought = true;
             
-            if (item === 'autoclicker') {
-                shopItem.active = true;
-                shopItem.duration = 30; // 30 seconds
-                showNotification("Auto-clicker activated for 30 seconds!", "success");
+            if (item === 'premium') {
+                showNotification(`Purchased ${shopItem.name}! (+0.5x to all multipliers)`, "success");
             } else {
                 showNotification(`Purchased ${shopItem.name}!`, "success");
             }
@@ -1226,28 +1605,43 @@
         }
     }
 
-    // Save game function
+    // FIXED: Save game function with proper file download
     function saveGame() {
         const saveCode = encryption.generateSaveCode();
         
         // Save to localStorage
         localStorage.setItem('tokClickerSaveCode', saveCode);
         
-        // Create downloadable file
-        const blob = new Blob([saveCode], { type: 'text/plain' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `tok_clicker_save_${Date.now()}.tok`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-        
-        // Display the save code
-        cookieDisplay.textContent = saveCode.substring(0, 200) + "...";
-        
-        showNotification("Game saved and file downloaded!", "success");
+        // Create downloadable file - FIXED VERSION
+        try {
+            const blob = new Blob([saveCode], { type: 'text/plain;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `tok_clicker_save_${Date.now()}.tok`;
+            
+            // Append to body, click, and remove
+            document.body.appendChild(a);
+            a.click();
+            
+            // Clean up
+            setTimeout(() => {
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            }, 100);
+            
+            // Display the save code
+            cookieDisplay.textContent = saveCode.substring(0, 150) + "...";
+            
+            showNotification("Game saved and file downloaded!", "success");
+        } catch (error) {
+            console.error("Download failed:", error);
+            showNotification("Save successful but download failed. Check browser permissions.", "warning");
+            
+            // Still show the code for manual copy
+            cookieDisplay.textContent = saveCode.substring(0, 150) + "...";
+            showNotification("Game saved locally! Copy the code above to backup.", "info");
+        }
     }
 
     // Auto-save function
@@ -1267,16 +1661,33 @@
                 const loadedState = encryption.parseSaveCode(saveCode);
                 
                 if (loadedState) {
+                    // Stop auto-clicker before loading new state
+                    if (gameState.autoClicker.active) {
+                        stopAutoClicker();
+                    }
+                    
                     gameState = loadedState;
+                    
+                    // Ensure multipliers array exists
+                    if (!gameState.multipliers || gameState.multipliers.length === 0) {
+                        initializeMultipliers();
+                    }
+                    
                     updateDisplay();
                     renderUpgrades();
                     renderAchievements();
+                    renderMultipliers();
+                    updateAutoClickerDisplay();
                     showNotification("Game loaded from file!", "success");
                     closeLoadModal();
                 }
             } catch (error) {
                 showNotification("Failed to load file: Invalid or corrupted!", "error");
             }
+        };
+        
+        reader.onerror = function() {
+            showNotification("Error reading file!", "error");
         };
         
         reader.readAsText(file);
@@ -1295,10 +1706,23 @@
             const loadedState = encryption.parseSaveCode(code);
             
             if (loadedState) {
+                // Stop auto-clicker before loading new state
+                if (gameState.autoClicker.active) {
+                    stopAutoClicker();
+                }
+                
                 gameState = loadedState;
+                
+                // Ensure multipliers array exists
+                if (!gameState.multipliers || gameState.multipliers.length === 0) {
+                    initializeMultipliers();
+                }
+                
                 updateDisplay();
                 renderUpgrades();
                 renderAchievements();
+                renderMultipliers();
+                updateAutoClickerDisplay();
                 showNotification("Game loaded from code!", "success");
                 closeLoadModal();
             }
@@ -1310,6 +1734,11 @@
     // Reset game
     function resetGame() {
         if (confirm("Are you sure you want to reset your game? ALL progress will be lost permanently!")) {
+            // Stop auto-clicker
+            if (gameState.autoClicker.active) {
+                stopAutoClicker();
+            }
+            
             // Create fresh game state
             const freshState = {
                 views: 0,
@@ -1322,6 +1751,14 @@
                 lastPlayDate: new Date().toDateString(),
                 multiplier: 1,
                 totalClicks: 0,
+                autoClicker: {
+                    active: false,
+                    speed: 1.9,
+                    boosted: false,
+                    totalAutoClicks: 0,
+                    interval: null
+                },
+                multipliers: [],
                 upgrades: { ...gameState.upgrades },
                 shop: { ...gameState.shop },
                 achievements: { ...gameState.achievements },
@@ -1355,13 +1792,12 @@
             // Reset shop
             Object.keys(freshState.shop).forEach(key => {
                 freshState.shop[key].bought = false;
-                if (key === 'autoclicker') {
-                    freshState.shop[key].active = false;
-                    freshState.shop[key].duration = 0;
-                }
             });
             
             gameState = freshState;
+            
+            // Initialize multipliers
+            initializeMultipliers();
             
             // Clear localStorage
             localStorage.removeItem('tokClickerSaveCode');
@@ -1369,6 +1805,8 @@
             updateDisplay();
             renderUpgrades();
             renderAchievements();
+            renderMultipliers();
+            updateAutoClickerDisplay();
             showNotification("Game reset successfully!", "success");
         }
     }
@@ -1384,6 +1822,8 @@
             notification.style.background = "linear-gradient(90deg, #FF416C, #FF4B2B)";
         } else if (type === "warning") {
             notification.style.background = "linear-gradient(90deg, #FFD600, #FF9500)";
+        } else {
+            notification.style.background = "linear-gradient(90deg, var(--tiktok-teal), var(--tiktok-pink))";
         }
         
         notification.classList.add('show');
@@ -1407,6 +1847,7 @@
     function setupEventListeners() {
         // Click button
         clickButton.addEventListener('click', handleClick);
+        clickButton.addEventListener('touchstart', handleClick, { passive: true });
         
         // Save button
         saveBtn.addEventListener('click', saveGame);
@@ -1420,6 +1861,7 @@
         fileUpload.addEventListener('change', (e) => {
             if (e.target.files[0]) {
                 loadFromFile(e.target.files[0]);
+                fileUpload.value = ''; // Reset file input
             }
         });
         
@@ -1431,6 +1873,11 @@
         
         // Reset button
         resetBtn.addEventListener('click', resetGame);
+        
+        // Auto-clicker buttons
+        startAutoClickerBtn.addEventListener('click', startAutoClicker);
+        stopAutoClickerBtn.addEventListener('click', stopAutoClicker);
+        boostAutoClickerBtn.addEventListener('click', boostAutoClicker);
         
         // Close modal when clicking outside
         loadModal.addEventListener('click', (e) => {
@@ -1448,6 +1895,17 @@
             if (e.key === 'Escape') {
                 closeLoadModal();
             }
+            // Spacebar to click
+            if (e.key === ' ' && e.target === document.body) {
+                e.preventDefault();
+                // Simulate a click
+                handleClick({ clientX: window.innerWidth / 2, clientY: window.innerHeight / 2 });
+            }
+        });
+        
+        // Prevent context menu on click area
+        clickButton.addEventListener('contextmenu', (e) => {
+            e.preventDefault();
         });
     }
 
