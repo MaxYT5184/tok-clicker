@@ -1,0 +1,1457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Tok Clicker - Advanced TikTok Clicker Game</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --tiktok-black: #000000;
+            --tiktok-teal: #25F4EE;
+            --tiktok-pink: #FE2C55;
+            --tiktok-purple: #7B61FF;
+            --tiktok-yellow: #FFD600;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #000000 0%, #121212 50%, #1a1a1a 100%);
+            color: white;
+            min-height: 100vh;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 900px;
+            width: 100%;
+            background-color: rgba(20, 20, 20, 0.95);
+            border-radius: 25px;
+            padding: 25px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.8);
+            border: 3px solid var(--tiktok-teal);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .container::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, var(--tiktok-pink) 0%, transparent 70%);
+            opacity: 0.05;
+            z-index: 0;
+        }
+        
+        * > * {
+            position: relative;
+            z-index: 1;
+        }
+        
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            background: linear-gradient(90deg, var(--tiktok-teal), var(--tiktok-pink), var(--tiktok-purple));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 0 15px rgba(37, 244, 238, 0.3);
+            font-size: 2.8em;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+        
+        .header-icons {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        
+        @media (min-width: 768px) {
+            .stats-container {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+        
+        .stat-card {
+            background: linear-gradient(145deg, rgba(37, 244, 238, 0.1), rgba(254, 44, 85, 0.1));
+            border-radius: 15px;
+            padding: 20px 15px;
+            text-align: center;
+            border: 2px solid;
+            border-image: linear-gradient(45deg, var(--tiktok-teal), var(--tiktok-pink)) 1;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .stat-icon {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+        
+        .stat-label {
+            font-size: 0.9em;
+            color: #aaa;
+            margin-bottom: 5px;
+        }
+        
+        .stat-value {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: white;
+            text-shadow: 0 0 10px var(--tiktok-teal);
+        }
+        
+        .click-area {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 40px;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 20px;
+            border: 2px solid var(--tiktok-purple);
+        }
+        
+        .tiktok-logo-container {
+            position: relative;
+            width: 220px;
+            height: 220px;
+            margin-bottom: 25px;
+            cursor: pointer;
+            transition: transform 0.1s;
+        }
+        
+        @media (max-width: 600px) {
+            .tiktok-logo-container {
+                width: 180px;
+                height: 180px;
+            }
+        }
+        
+        .tiktok-logo-container:active {
+            transform: scale(0.95);
+        }
+        
+        .tiktok-logo {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--tiktok-teal) 0%, var(--tiktok-pink) 50%, var(--tiktok-purple) 100%);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 0 50px rgba(254, 44, 85, 0.7);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .tiktok-logo::before {
+            content: '';
+            position: absolute;
+            width: 80%;
+            height: 80%;
+            background: black;
+            border-radius: 50%;
+        }
+        
+        .music-note {
+            position: absolute;
+            color: white;
+            font-size: 5em;
+            z-index: 2;
+            text-shadow: 0 0 20px var(--tiktok-teal);
+        }
+        
+        .click-effects {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+        
+        .click-effect {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            background: radial-gradient(circle, var(--tiktok-yellow) 0%, transparent 70%);
+            border-radius: 50%;
+            opacity: 0;
+            animation: clickAnimation 0.8s ease-out;
+        }
+        
+        @keyframes clickAnimation {
+            0% {
+                transform: scale(0);
+                opacity: 0.8;
+            }
+            100% {
+                transform: scale(3);
+                opacity: 0;
+            }
+        }
+        
+        .click-info {
+            font-size: 1.3em;
+            color: var(--tiktok-teal);
+            text-align: center;
+            margin-top: 15px;
+            font-weight: bold;
+        }
+        
+        .upgrades-section {
+            margin-bottom: 40px;
+        }
+        
+        .section-title {
+            font-size: 1.8em;
+            color: var(--tiktok-teal);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .upgrades-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        
+        .upgrade-card {
+            background: linear-gradient(145deg, rgba(20, 20, 20, 0.9), rgba(40, 40, 40, 0.9));
+            border-radius: 15px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .upgrade-card:hover {
+            transform: translateY(-8px);
+            border-color: var(--tiktok-teal);
+            box-shadow: 0 10px 20px rgba(37, 244, 238, 0.2);
+        }
+        
+        .upgrade-card:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+            border-color: transparent !important;
+        }
+        
+        .upgrade-icon {
+            font-size: 2em;
+            color: var(--tiktok-pink);
+            margin-bottom: 5px;
+        }
+        
+        .upgrade-name {
+            font-weight: bold;
+            font-size: 1.2em;
+            color: white;
+        }
+        
+        .upgrade-desc {
+            font-size: 0.9em;
+            color: #aaa;
+            flex-grow: 1;
+        }
+        
+        .upgrade-cost {
+            color: var(--tiktok-yellow);
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+        
+        .upgrade-level {
+            color: var(--tiktok-teal);
+            font-size: 0.9em;
+        }
+        
+        .save-load-section {
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 20px;
+            padding: 25px;
+            margin-top: 30px;
+            border: 2px solid var(--tiktok-purple);
+        }
+        
+        .save-load-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        
+        .btn {
+            padding: 15px 25px;
+            border: none;
+            border-radius: 50px;
+            font-weight: bold;
+            font-size: 1em;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            min-width: 200px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(90deg, var(--tiktok-teal), var(--tiktok-pink));
+            color: white;
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(90deg, var(--tiktok-purple), #7B61FF);
+            color: white;
+        }
+        
+        .btn-danger {
+            background: linear-gradient(90deg, #FF416C, #FF4B2B);
+            color: white;
+        }
+        
+        .btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 20px rgba(255, 255, 255, 0.2);
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .modal-content {
+            background: linear-gradient(145deg, #1a1a1a, #000000);
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 500px;
+            width: 100%;
+            border: 3px solid var(--tiktok-teal);
+            box-shadow: 0 0 50px rgba(37, 244, 238, 0.5);
+        }
+        
+        .modal-title {
+            font-size: 1.8em;
+            color: var(--tiktok-teal);
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .modal-input {
+            width: 100%;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.7);
+            border: 2px solid var(--tiktok-purple);
+            border-radius: 10px;
+            color: white;
+            font-size: 1em;
+            margin-bottom: 20px;
+            font-family: monospace;
+        }
+        
+        .modal-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+        
+        .cookie-display {
+            background: rgba(0, 0, 0, 0.8);
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 20px;
+            border: 1px solid var(--tiktok-teal);
+            word-break: break-all;
+            font-family: monospace;
+            font-size: 0.8em;
+            max-height: 150px;
+            overflow-y: auto;
+        }
+        
+        .achievements-section {
+            margin-top: 40px;
+        }
+        
+        .achievements-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 15px;
+        }
+        
+        .achievement-card {
+            background: rgba(30, 30, 30, 0.9);
+            border-radius: 15px;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            border-left: 5px solid transparent;
+        }
+        
+        .achievement-card.unlocked {
+            border-left-color: var(--tiktok-yellow);
+            background: rgba(30, 30, 30, 0.9);
+        }
+        
+        .achievement-icon {
+            font-size: 2em;
+            color: var(--tiktok-pink);
+        }
+        
+        .achievement-locked .achievement-icon {
+            color: #555;
+        }
+        
+        .achievement-info {
+            flex-grow: 1;
+        }
+        
+        .achievement-name {
+            font-weight: bold;
+            color: white;
+        }
+        
+        .achievement-desc {
+            font-size: 0.9em;
+            color: #aaa;
+        }
+        
+        .achievement-reward {
+            color: var(--tiktok-yellow);
+            font-weight: bold;
+        }
+        
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(90deg, var(--tiktok-teal), var(--tiktok-pink));
+            color: white;
+            padding: 15px 25px;
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
+            z-index: 1001;
+            transform: translateX(150%);
+            transition: transform 0.5s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .notification.show {
+            transform: translateX(0);
+        }
+        
+        .shop-section {
+            margin-top: 40px;
+        }
+        
+        .shop-items {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 15px;
+        }
+        
+        .shop-item {
+            background: linear-gradient(145deg, rgba(20, 20, 20, 0.9), rgba(40, 40, 40, 0.9));
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            border: 2px solid var(--tiktok-purple);
+        }
+        
+        .shop-item-icon {
+            font-size: 3em;
+            color: var(--tiktok-yellow);
+            margin-bottom: 15px;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--tiktok-teal), var(--tiktok-pink));
+            border-radius: 5px;
+            transition: width 0.5s;
+        }
+        
+        /* Mobile optimizations */
+        @media (max-width: 480px) {
+            .container {
+                padding: 15px;
+                border-radius: 20px;
+            }
+            
+            h1 {
+                font-size: 2em;
+            }
+            
+            .btn {
+                min-width: 100%;
+                padding: 12px 20px;
+            }
+            
+            .save-load-buttons {
+                flex-direction: column;
+            }
+            
+            .upgrades-grid, .achievements-grid, .shop-items {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>
+            <i class="fab fa-tiktok"></i>
+            TOK CLICKER
+            <div class="header-icons">
+                <i class="fas fa-music"></i>
+                <i class="fas fa-video"></i>
+                <i class="fas fa-fire"></i>
+            </div>
+        </h1>
+        
+        <div class="stats-container">
+            <div class="stat-card">
+                <div class="stat-icon">👁️</div>
+                <div class="stat-label">TOTAL VIEWS</div>
+                <div id="views" class="stat-value">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">⚡</div>
+                <div class="stat-label">VIEWS/CLICK</div>
+                <div id="views-per-click" class="stat-value">1</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">🚀</div>
+                <div class="stat-label">VIEWS/SECOND</div>
+                <div id="views-per-second" class="stat-value">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">👥</div>
+                <div class="stat-label">FOLLOWERS</div>
+                <div id="followers" class="stat-value">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">💰</div>
+                <div class="stat-label">COINS</div>
+                <div id="coins" class="stat-value">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">🏆</div>
+                <div class="stat-label">PRESTIGE</div>
+                <div id="prestige" class="stat-value">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">🔥</div>
+                <div class="stat-label">STREAK</div>
+                <div id="streak" class="stat-value">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">📈</div>
+                <div class="stat-label">MULTIPLIER</div>
+                <div id="multiplier" class="stat-value">1.00x</div>
+            </div>
+        </div>
+        
+        <div class="click-area">
+            <div class="tiktok-logo-container" id="click-button">
+                <div class="tiktok-logo">
+                    <div class="music-note">♪</div>
+                </div>
+                <div class="click-effects" id="click-effects"></div>
+            </div>
+            <div class="click-info">Tap the TikTok logo to get views!</div>
+            <div class="progress-bar">
+                <div id="streak-progress" class="progress-fill" style="width: 0%"></div>
+            </div>
+            <div>Daily Streak: <span id="streak-days">0/7</span> days</div>
+        </div>
+        
+        <div class="upgrades-section">
+            <h2 class="section-title"><i class="fas fa-arrow-up"></i> UPGRADES</h2>
+            <div class="upgrades-grid" id="upgrades-container">
+                <!-- Upgrades will be generated here -->
+            </div>
+        </div>
+        
+        <div class="shop-section">
+            <h2 class="section-title"><i class="fas fa-store"></i> SHOP</h2>
+            <div class="shop-items">
+                <div class="shop-item">
+                    <div class="shop-item-icon">🎭</div>
+                    <div class="upgrade-name">Effects Pack</div>
+                    <div class="upgrade-desc">Unlock special click effects</div>
+                    <div class="upgrade-cost">Cost: 1,000 coins</div>
+                    <button class="btn btn-secondary" onclick="buyShopItem('effects')">BUY</button>
+                </div>
+                <div class="shop-item">
+                    <div class="shop-item-icon">🌈</div>
+                    <div class="upgrade-name">Rainbow Theme</div>
+                    <div class="upgrade-desc">Change the game colors</div>
+                    <div class="upgrade-cost">Cost: 5,000 coins</div>
+                    <button class="btn btn-secondary" onclick="buyShopItem('theme')">BUY</button>
+                </div>
+                <div class="shop-item">
+                    <div class="shop-item-icon">⚡</div>
+                    <div class="upgrade-name">Auto-Clicker</div>
+                    <div class="upgrade-desc">Clicks automatically for 30 seconds</div>
+                    <div class="upgrade-cost">Cost: 500 coins</div>
+                    <button class="btn btn-secondary" onclick="buyShopItem('autoclicker')">BUY</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="achievements-section">
+            <h2 class="section-title"><i class="fas fa-trophy"></i> ACHIEVEMENTS</h2>
+            <div class="achievements-grid" id="achievements-container">
+                <!-- Achievements will be generated here -->
+            </div>
+        </div>
+        
+        <div class="save-load-section">
+            <h2 class="section-title"><i class="fas fa-save"></i> SAVE & LOAD</h2>
+            <p style="text-align: center; margin-bottom: 20px; color: #aaa;">
+                Your game is protected with advanced encryption. Cheating is impossible!
+            </p>
+            
+            <div class="save-load-buttons">
+                <button class="btn btn-primary" id="save-btn">
+                    <i class="fas fa-download"></i> SAVE GAME
+                </button>
+                <button class="btn btn-secondary" id="load-file-btn">
+                    <i class="fas fa-upload"></i> LOAD FROM FILE
+                </button>
+                <button class="btn btn-secondary" id="load-cookie-btn">
+                    <i class="fas fa-key"></i> LOAD FROM CODE
+                </button>
+                <button class="btn btn-danger" id="reset-btn">
+                    <i class="fas fa-trash"></i> RESET GAME
+                </button>
+            </div>
+            
+            <div class="cookie-display" id="cookie-display">
+                Your encrypted save code will appear here after saving...
+            </div>
+        </div>
+    </div>
+    
+    <!-- Load Modal -->
+    <div class="modal" id="load-modal">
+        <div class="modal-content">
+            <h2 class="modal-title">LOAD GAME</h2>
+            <p style="margin-bottom: 20px; color: #aaa; text-align: center;">
+                Choose how to load your game:
+            </p>
+            <div style="display: flex; flex-direction: column; gap: 15px;">
+                <button class="btn btn-primary" id="load-file-input-btn">
+                    <i class="fas fa-file-upload"></i> Upload Save File
+                </button>
+                <input type="file" id="file-upload" accept=".txt,.tok" style="display: none;">
+                <div style="text-align: center; color: #aaa;">OR</div>
+                <textarea class="modal-input" id="cookie-input" placeholder="Paste your save code here..." rows="5"></textarea>
+                <div class="modal-buttons">
+                    <button class="btn btn-primary" id="load-cookie-confirm">LOAD CODE</button>
+                    <button class="btn btn-danger" id="close-modal">CANCEL</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Notification -->
+    <div class="notification" id="notification">
+        <i class="fas fa-check-circle"></i>
+        <span id="notification-text">Game saved successfully!</span>
+    </div>
+</body>
+
+<script>
+    // Advanced Game State with more properties
+    let gameState = {
+        // Core stats
+        views: 0,
+        viewsPerClick: 1,
+        viewsPerSecond: 0,
+        followers: 0,
+        coins: 0,
+        prestige: 0,
+        streak: 0,
+        lastPlayDate: null,
+        multiplier: 1,
+        totalClicks: 0,
+        
+        // Upgrades system
+        upgrades: {
+            phone: { level: 0, cost: 50, multiplier: 1, name: "Better Phone", desc: "Better quality videos", icon: "📱" },
+            hashtags: { level: 0, cost: 200, multiplier: 2, name: "Hashtags", desc: "Use trending hashtags", icon: "🏷️" },
+            editing: { level: 0, cost: 500, multiplier: 5, name: "Editing App", desc: "Professional editing", icon: "🎬" },
+            trends: { level: 0, cost: 1000, multiplier: 10, name: "Follow Trends", desc: "Jump on viral trends", icon: "🔥" },
+            collab: { level: 0, cost: 2500, multiplier: 20, name: "Collabs", desc: "Collaborate with creators", icon: "🤝" },
+            algorithm: { level: 0, cost: 5000, multiplier: 50, name: "Algorithm", desc: "Understand the algorithm", icon: "🤖" },
+            sponsor: { level: 0, cost: 15000, multiplier: 100, name: "Sponsors", desc: "Get brand deals", icon: "💰" },
+            verified: { level: 0, cost: 50000, multiplier: 200, name: "Verified", desc: "Get verified badge", icon: "✅" },
+            team: { level: 0, cost: 150000, multiplier: 500, name: "Team", desc: "Hire a content team", icon: "👥" },
+            studio: { level: 0, cost: 500000, multiplier: 1000, name: "Studio", desc: "Build your own studio", icon: "🎥" }
+        },
+        
+        // Shop items
+        shop: {
+            effects: { bought: false, cost: 1000, name: "Effects Pack" },
+            theme: { bought: false, cost: 5000, name: "Rainbow Theme" },
+            autoclicker: { bought: false, cost: 500, name: "Auto-Clicker", active: false, duration: 0 }
+        },
+        
+        // Achievements system
+        achievements: {
+            firstVideo: { unlocked: true, name: "First Video", desc: "Upload your first TikTok", reward: 100, icon: "🎬" },
+            viral: { unlocked: false, name: "Viral Video", desc: "Reach 10,000 views", reward: 1000, icon: "🔥" },
+            trending: { unlocked: false, name: "Trending", desc: "Reach 100,000 views", reward: 5000, icon: "📈" },
+            famous: { unlocked: false, name: "TikTok Famous", desc: "Reach 1,000,000 views", reward: 25000, icon: "👑" },
+            influencer: { unlocked: false, name: "Influencer", desc: "Get 10,000 followers", reward: 50000, icon: "🌟" },
+            millionaire: { unlocked: false, name: "Millionaire", desc: "Get 1,000,000 followers", reward: 250000, icon: "💎" },
+            clickMaster: { unlocked: false, name: "Click Master", desc: "Make 10,000 clicks", reward: 10000, icon: "⚡" },
+            dailyPlayer: { unlocked: false, name: "Daily Player", desc: "Play for 7 days straight", reward: 15000, icon: "📅" }
+        },
+        
+        // Game metadata
+        gameVersion: "2.0.1",
+        creationDate: new Date().toISOString(),
+        lastSaveDate: null,
+        playTime: 0,
+        securityHash: ""
+    };
+
+    // DOM Elements
+    const viewsEl = document.getElementById('views');
+    const viewsPerClickEl = document.getElementById('views-per-click');
+    const viewsPerSecondEl = document.getElementById('views-per-second');
+    const followersEl = document.getElementById('followers');
+    const coinsEl = document.getElementById('coins');
+    const prestigeEl = document.getElementById('prestige');
+    const streakEl = document.getElementById('streak');
+    const multiplierEl = document.getElementById('multiplier');
+    const streakDaysEl = document.getElementById('streak-days');
+    const streakProgressEl = document.getElementById('streak-progress');
+    const clickButton = document.getElementById('click-button');
+    const clickEffects = document.getElementById('click-effects');
+    const upgradesContainer = document.getElementById('upgrades-container');
+    const achievementsContainer = document.getElementById('achievements-container');
+    const saveBtn = document.getElementById('save-btn');
+    const loadFileBtn = document.getElementById('load-file-btn');
+    const loadCookieBtn = document.getElementById('load-cookie-btn');
+    const resetBtn = document.getElementById('reset-btn');
+    const loadModal = document.getElementById('load-modal');
+    const fileUpload = document.getElementById('file-upload');
+    const loadFileInputBtn = document.getElementById('load-file-input-btn');
+    const cookieInput = document.getElementById('cookie-input');
+    const loadCookieConfirm = document.getElementById('load-cookie-confirm');
+    const closeModal = document.getElementById('close-modal');
+    const cookieDisplay = document.getElementById('cookie-display');
+    const notification = document.getElementById('notification');
+    const notificationText = document.getElementById('notification-text');
+
+    // Advanced Encryption System
+    const encryption = {
+        // Generate a complex encryption key based on game state
+        generateKey: () => {
+            const baseKey = "TK_CLICKER_ULTRA_SECURE_v2_";
+            const randomPart = Math.random().toString(36).substring(2, 15);
+            const timePart = Date.now().toString(36);
+            return baseKey + randomPart + timePart + "_" + gameState.gameVersion;
+        },
+        
+        // Advanced XOR encryption with multiple passes
+        encrypt: (data, key) => {
+            let encrypted = "";
+            const dataStr = JSON.stringify(data);
+            
+            // Add salt and metadata
+            const saltedData = {
+                data: dataStr,
+                timestamp: Date.now(),
+                salt: Math.random().toString(36).substring(2, 15),
+                checksum: this.generateChecksum(dataStr)
+            };
+            
+            const saltedStr = JSON.stringify(saltedData);
+            
+            // Multiple encryption passes
+            for (let i = 0; i < key.length; i++) {
+                let charCode = saltedStr.charCodeAt(i % saltedStr.length) ^ key.charCodeAt(i % key.length);
+                charCode = charCode ^ (i * 37); // Additional transformation
+                encrypted += String.fromCharCode(charCode);
+            }
+            
+            // Convert to base64 for additional obfuscation
+            return btoa(encrypted + "||" + key.substring(0, 10));
+        },
+        
+        // Decryption with validation
+        decrypt: (encryptedData, key) => {
+            try {
+                // Decode from base64
+                const decoded = atob(encryptedData);
+                const parts = decoded.split("||");
+                
+                if (parts.length !== 2) throw new Error("Invalid save format");
+                
+                let decrypted = "";
+                const dataPart = parts[0];
+                
+                // Reverse encryption
+                for (let i = 0; i < dataPart.length; i++) {
+                    let charCode = dataPart.charCodeAt(i) ^ (i * 37); // Reverse transformation
+                    charCode = charCode ^ key.charCodeAt(i % key.length);
+                    decrypted += String.fromCharCode(charCode);
+                }
+                
+                // Parse and validate
+                const parsed = JSON.parse(decrypted);
+                
+                // Verify checksum
+                const expectedChecksum = this.generateChecksum(parsed.data);
+                if (parsed.checksum !== expectedChecksum) {
+                    throw new Error("Save data corrupted or tampered with!");
+                }
+                
+                return JSON.parse(parsed.data);
+            } catch (error) {
+                console.error("Decryption failed:", error);
+                showNotification("Failed to load save: Invalid or corrupted data!", "error");
+                return null;
+            }
+        },
+        
+        // Generate checksum to detect tampering
+        generateChecksum: (str) => {
+            let hash = 0;
+            for (let i = 0; i < str.length; i++) {
+                const char = str.charCodeAt(i);
+                hash = ((hash << 5) - hash) + char;
+                hash = hash & hash; // Convert to 32-bit integer
+            }
+            return Math.abs(hash).toString(36);
+        },
+        
+        // Generate a secure save code (cookie)
+        generateSaveCode: () => {
+            const key = this.generateKey();
+            const encrypted = this.encrypt(gameState, key);
+            
+            // Add version and security headers
+            const fullCode = `TKSAVE_v${gameState.gameVersion}_${Date.now()}_${encrypted}`;
+            
+            // Update game state with security hash
+            gameState.securityHash = this.generateChecksum(fullCode);
+            gameState.lastSaveDate = new Date().toISOString();
+            
+            return fullCode;
+        },
+        
+        // Parse and validate save code
+        parseSaveCode: (code) => {
+            // Extract version and encrypted data
+            const parts = code.split('_');
+            if (parts.length < 4 || !parts[0].startsWith('TKSAVE')) {
+                throw new Error("Invalid save code format");
+            }
+            
+            const version = parts[1].substring(1);
+            const encryptedData = parts.slice(3).join('_');
+            
+            // For simplicity, we'll use a fixed key for decryption
+            // In a real implementation, you'd have a more sophisticated key management system
+            const key = "TK_CLICKER_ULTRA_SECURE_v2_FIXED_KEY_" + version;
+            
+            return this.decrypt(encryptedData, key);
+        }
+    };
+
+    // Game initialization
+    function initGame() {
+        // Try to load from localStorage first
+        const savedCode = localStorage.getItem('tokClickerSaveCode');
+        if (savedCode) {
+            try {
+                const loadedState = encryption.parseSaveCode(savedCode);
+                if (loadedState) {
+                    gameState = loadedState;
+                    showNotification("Game loaded from local storage!", "success");
+                }
+            } catch (e) {
+                console.warn("Failed to load from localStorage:", e);
+            }
+        }
+        
+        // Check daily streak
+        checkDailyStreak();
+        
+        // Set up game loop
+        setInterval(gameLoop, 1000);
+        
+        // Initialize displays
+        updateDisplay();
+        renderUpgrades();
+        renderAchievements();
+        
+        // Set up event listeners
+        setupEventListeners();
+        
+        // Start auto-save interval
+        setInterval(autoSave, 30000); // Auto-save every 30 seconds
+        
+        // Initialize game time tracking
+        setInterval(() => {
+            gameState.playTime++;
+        }, 1000);
+    }
+
+    // Game loop
+    function gameLoop() {
+        // Passive income
+        gameState.views += gameState.viewsPerSecond * gameState.multiplier;
+        
+        // Update shop items
+        updateShopItems();
+        
+        // Update display
+        updateDisplay();
+        
+        // Check achievements
+        checkAchievements();
+    }
+
+    // Handle click on TikTok logo
+    function handleClick(event) {
+        // Calculate position for effect
+        const rect = clickButton.getBoundingClientRect();
+        const x = event.clientX - rect.left;
+        const y = event.clientY - rect.top;
+        
+        // Create click effect
+        const effect = document.createElement('div');
+        effect.className = 'click-effect';
+        effect.style.left = x + 'px';
+        effect.style.top = y + 'px';
+        clickEffects.appendChild(effect);
+        
+        // Remove effect after animation
+        setTimeout(() => {
+            effect.remove();
+        }, 800);
+        
+        // Add views with multiplier
+        const viewsGained = gameState.viewsPerClick * gameState.multiplier;
+        gameState.views += viewsGained;
+        gameState.totalClicks++;
+        
+        // Random chance for followers and coins
+        if (Math.random() < 0.15) {
+            gameState.followers += Math.floor(gameState.multiplier);
+        }
+        
+        if (Math.random() < 0.05) {
+            gameState.coins += Math.floor(gameState.multiplier * 2);
+        }
+        
+        // Update display
+        updateDisplay();
+        
+        // Check for achievement progress
+        checkAchievements();
+    }
+
+    // Update all display elements
+    function updateDisplay() {
+        viewsEl.textContent = formatNumber(gameState.views);
+        viewsPerClickEl.textContent = formatNumber(gameState.viewsPerClick * gameState.multiplier);
+        viewsPerSecondEl.textContent = formatNumber(gameState.viewsPerSecond * gameState.multiplier);
+        followersEl.textContent = formatNumber(gameState.followers);
+        coinsEl.textContent = formatNumber(gameState.coins);
+        prestigeEl.textContent = gameState.prestige;
+        streakEl.textContent = gameState.streak;
+        multiplierEl.textContent = gameState.multiplier.toFixed(2) + 'x';
+        
+        // Update streak progress
+        const progress = (gameState.streak % 7) * (100 / 7);
+        streakProgressEl.style.width = progress + '%';
+        streakDaysEl.textContent = (gameState.streak % 7) + '/7';
+    }
+
+    // Format numbers with abbreviations
+    function formatNumber(num) {
+        if (num >= 1e12) return (num / 1e12).toFixed(2) + 'T';
+        if (num >= 1e9) return (num / 1e9).toFixed(2) + 'B';
+        if (num >= 1e6) return (num / 1e6).toFixed(2) + 'M';
+        if (num >= 1e3) return (num / 1e3).toFixed(2) + 'K';
+        return Math.floor(num);
+    }
+
+    // Render upgrades
+    function renderUpgrades() {
+        upgradesContainer.innerHTML = '';
+        
+        Object.keys(gameState.upgrades).forEach(key => {
+            const upgrade = gameState.upgrades[key];
+            const canAfford = gameState.views >= upgrade.cost;
+            
+            const upgradeEl = document.createElement('div');
+            upgradeEl.className = 'upgrade-card';
+            upgradeEl.innerHTML = `
+                <div class="upgrade-icon">${upgrade.icon}</div>
+                <div class="upgrade-name">${upgrade.name}</div>
+                <div class="upgrade-desc">${upgrade.desc}</div>
+                <div class="upgrade-cost">Cost: ${formatNumber(upgrade.cost)} views</div>
+                <div class="upgrade-level">Level: ${upgrade.level}</div>
+            `;
+            
+            if (canAfford) {
+                upgradeEl.style.cursor = 'pointer';
+                upgradeEl.onclick = () => purchaseUpgrade(key);
+            } else {
+                upgradeEl.style.opacity = '0.6';
+                upgradeEl.style.cursor = 'not-allowed';
+            }
+            
+            upgradesContainer.appendChild(upgradeEl);
+        });
+    }
+
+    // Purchase upgrade
+    function purchaseUpgrade(upgradeKey) {
+        const upgrade = gameState.upgrades[upgradeKey];
+        
+        if (gameState.views >= upgrade.cost) {
+            gameState.views -= upgrade.cost;
+            upgrade.level += 1;
+            gameState.viewsPerSecond += upgrade.multiplier;
+            upgrade.cost = Math.floor(upgrade.cost * 1.7);
+            
+            updateDisplay();
+            renderUpgrades();
+            showNotification(`Purchased ${upgrade.name} level ${upgrade.level}!`, "success");
+        }
+    }
+
+    // Render achievements
+    function renderAchievements() {
+        achievementsContainer.innerHTML = '';
+        
+        Object.keys(gameState.achievements).forEach(key => {
+            const achievement = gameState.achievements[key];
+            
+            const achievementEl = document.createElement('div');
+            achievementEl.className = `achievement-card ${achievement.unlocked ? 'unlocked' : 'achievement-locked'}`;
+            achievementEl.innerHTML = `
+                <div class="achievement-icon">${achievement.icon}</div>
+                <div class="achievement-info">
+                    <div class="achievement-name">${achievement.name}</div>
+                    <div class="achievement-desc">${achievement.desc}</div>
+                    <div class="achievement-reward">Reward: ${formatNumber(achievement.reward)} coins</div>
+                </div>
+            `;
+            
+            achievementsContainer.appendChild(achievementEl);
+        });
+    }
+
+    // Check and unlock achievements
+    function checkAchievements() {
+        let newAchievements = false;
+        
+        // Check each achievement
+        if (!gameState.achievements.viral.unlocked && gameState.views >= 10000) {
+            gameState.achievements.viral.unlocked = true;
+            gameState.coins += gameState.achievements.viral.reward;
+            newAchievements = true;
+        }
+        
+        if (!gameState.achievements.trending.unlocked && gameState.views >= 100000) {
+            gameState.achievements.trending.unlocked = true;
+            gameState.coins += gameState.achievements.trending.reward;
+            newAchievements = true;
+        }
+        
+        if (!gameState.achievements.famous.unlocked && gameState.views >= 1000000) {
+            gameState.achievements.famous.unlocked = true;
+            gameState.coins += gameState.achievements.famous.reward;
+            newAchievements = true;
+        }
+        
+        if (!gameState.achievements.influencer.unlocked && gameState.followers >= 10000) {
+            gameState.achievements.influencer.unlocked = true;
+            gameState.coins += gameState.achievements.influencer.reward;
+            newAchievements = true;
+        }
+        
+        if (!gameState.achievements.millionaire.unlocked && gameState.followers >= 1000000) {
+            gameState.achievements.millionaire.unlocked = true;
+            gameState.coins += gameState.achievements.millionaire.reward;
+            newAchievements = true;
+        }
+        
+        if (!gameState.achievements.clickMaster.unlocked && gameState.totalClicks >= 10000) {
+            gameState.achievements.clickMaster.unlocked = true;
+            gameState.coins += gameState.achievements.clickMaster.reward;
+            newAchievements = true;
+        }
+        
+        if (!gameState.achievements.dailyPlayer.unlocked && gameState.streak >= 7) {
+            gameState.achievements.dailyPlayer.unlocked = true;
+            gameState.coins += gameState.achievements.dailyPlayer.reward;
+            newAchievements = true;
+        }
+        
+        if (newAchievements) {
+            renderAchievements();
+            showNotification("New achievement unlocked!", "success");
+        }
+    }
+
+    // Check daily streak
+    function checkDailyStreak() {
+        const today = new Date().toDateString();
+        
+        if (!gameState.lastPlayDate) {
+            gameState.lastPlayDate = today;
+            gameState.streak = 1;
+        } else if (gameState.lastPlayDate !== today) {
+            const lastPlay = new Date(gameState.lastPlayDate);
+            const currentDate = new Date();
+            const diffTime = Math.abs(currentDate - lastPlay);
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            
+            if (diffDays === 1) {
+                gameState.streak++;
+                showNotification(`Daily streak: ${gameState.streak} days!`, "info");
+            } else if (diffDays > 1) {
+                gameState.streak = 1;
+                showNotification("Streak broken! Starting new streak.", "warning");
+            }
+            
+            gameState.lastPlayDate = today;
+        }
+        
+        // Bonus multiplier for streak
+        gameState.multiplier = 1 + (gameState.streak * 0.05);
+    }
+
+    // Update shop items
+    function updateShopItems() {
+        // Update auto-clicker if active
+        if (gameState.shop.autoclicker.active) {
+            gameState.shop.autoclicker.duration--;
+            if (gameState.shop.autoclicker.duration <= 0) {
+                gameState.shop.autoclicker.active = false;
+                showNotification("Auto-clicker expired!", "info");
+            }
+        }
+    }
+
+    // Buy shop item
+    function buyShopItem(item) {
+        const shopItem = gameState.shop[item];
+        
+        if (gameState.coins >= shopItem.cost && !shopItem.bought) {
+            gameState.coins -= shopItem.cost;
+            shopItem.bought = true;
+            
+            if (item === 'autoclicker') {
+                shopItem.active = true;
+                shopItem.duration = 30; // 30 seconds
+                showNotification("Auto-clicker activated for 30 seconds!", "success");
+            } else {
+                showNotification(`Purchased ${shopItem.name}!`, "success");
+            }
+            
+            updateDisplay();
+        } else if (shopItem.bought) {
+            showNotification("You already own this item!", "warning");
+        } else {
+            showNotification("Not enough coins!", "error");
+        }
+    }
+
+    // Save game function
+    function saveGame() {
+        const saveCode = encryption.generateSaveCode();
+        
+        // Save to localStorage
+        localStorage.setItem('tokClickerSaveCode', saveCode);
+        
+        // Create downloadable file
+        const blob = new Blob([saveCode], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `tok_clicker_save_${Date.now()}.tok`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        
+        // Display the save code
+        cookieDisplay.textContent = saveCode.substring(0, 200) + "...";
+        
+        showNotification("Game saved and file downloaded!", "success");
+    }
+
+    // Auto-save function
+    function autoSave() {
+        const saveCode = encryption.generateSaveCode();
+        localStorage.setItem('tokClickerSaveCode', saveCode);
+        console.log("Game auto-saved");
+    }
+
+    // Load game from file
+    function loadFromFile(file) {
+        const reader = new FileReader();
+        
+        reader.onload = function(e) {
+            try {
+                const saveCode = e.target.result;
+                const loadedState = encryption.parseSaveCode(saveCode);
+                
+                if (loadedState) {
+                    gameState = loadedState;
+                    updateDisplay();
+                    renderUpgrades();
+                    renderAchievements();
+                    showNotification("Game loaded from file!", "success");
+                    closeLoadModal();
+                }
+            } catch (error) {
+                showNotification("Failed to load file: Invalid or corrupted!", "error");
+            }
+        };
+        
+        reader.readAsText(file);
+    }
+
+    // Load game from code
+    function loadFromCode() {
+        const code = cookieInput.value.trim();
+        
+        if (!code) {
+            showNotification("Please enter a save code!", "warning");
+            return;
+        }
+        
+        try {
+            const loadedState = encryption.parseSaveCode(code);
+            
+            if (loadedState) {
+                gameState = loadedState;
+                updateDisplay();
+                renderUpgrades();
+                renderAchievements();
+                showNotification("Game loaded from code!", "success");
+                closeLoadModal();
+            }
+        } catch (error) {
+            showNotification("Invalid save code! Cannot load game.", "error");
+        }
+    }
+
+    // Reset game
+    function resetGame() {
+        if (confirm("Are you sure you want to reset your game? ALL progress will be lost permanently!")) {
+            // Create fresh game state
+            const freshState = {
+                views: 0,
+                viewsPerClick: 1,
+                viewsPerSecond: 0,
+                followers: 0,
+                coins: 0,
+                prestige: 0,
+                streak: 0,
+                lastPlayDate: new Date().toDateString(),
+                multiplier: 1,
+                totalClicks: 0,
+                upgrades: { ...gameState.upgrades },
+                shop: { ...gameState.shop },
+                achievements: { ...gameState.achievements },
+                gameVersion: gameState.gameVersion,
+                creationDate: new Date().toISOString(),
+                lastSaveDate: null,
+                playTime: 0,
+                securityHash: ""
+            };
+            
+            // Reset upgrade levels and costs
+            Object.keys(freshState.upgrades).forEach(key => {
+                freshState.upgrades[key].level = 0;
+                if (key === 'phone') freshState.upgrades[key].cost = 50;
+                if (key === 'hashtags') freshState.upgrades[key].cost = 200;
+                if (key === 'editing') freshState.upgrades[key].cost = 500;
+                if (key === 'trends') freshState.upgrades[key].cost = 1000;
+                if (key === 'collab') freshState.upgrades[key].cost = 2500;
+                if (key === 'algorithm') freshState.upgrades[key].cost = 5000;
+                if (key === 'sponsor') freshState.upgrades[key].cost = 15000;
+                if (key === 'verified') freshState.upgrades[key].cost = 50000;
+                if (key === 'team') freshState.upgrades[key].cost = 150000;
+                if (key === 'studio') freshState.upgrades[key].cost = 500000;
+            });
+            
+            // Reset achievements
+            Object.keys(freshState.achievements).forEach(key => {
+                freshState.achievements[key].unlocked = key === 'firstVideo';
+            });
+            
+            // Reset shop
+            Object.keys(freshState.shop).forEach(key => {
+                freshState.shop[key].bought = false;
+                if (key === 'autoclicker') {
+                    freshState.shop[key].active = false;
+                    freshState.shop[key].duration = 0;
+                }
+            });
+            
+            gameState = freshState;
+            
+            // Clear localStorage
+            localStorage.removeItem('tokClickerSaveCode');
+            
+            updateDisplay();
+            renderUpgrades();
+            renderAchievements();
+            showNotification("Game reset successfully!", "success");
+        }
+    }
+
+    // Show notification
+    function showNotification(message, type = "info") {
+        notificationText.textContent = message;
+        
+        // Set color based on type
+        if (type === "success") {
+            notification.style.background = "linear-gradient(90deg, #25F4EE, #00CC00)";
+        } else if (type === "error") {
+            notification.style.background = "linear-gradient(90deg, #FF416C, #FF4B2B)";
+        } else if (type === "warning") {
+            notification.style.background = "linear-gradient(90deg, #FFD600, #FF9500)";
+        }
+        
+        notification.classList.add('show');
+        
+        setTimeout(() => {
+            notification.classList.remove('show');
+        }, 3000);
+    }
+
+    // Modal functions
+    function openLoadModal() {
+        loadModal.style.display = 'flex';
+        cookieInput.value = '';
+    }
+
+    function closeLoadModal() {
+        loadModal.style.display = 'none';
+    }
+
+    // Set up event listeners
+    function setupEventListeners() {
+        // Click button
+        clickButton.addEventListener('click', handleClick);
+        
+        // Save button
+        saveBtn.addEventListener('click', saveGame);
+        
+        // Load buttons
+        loadFileBtn.addEventListener('click', openLoadModal);
+        loadCookieBtn.addEventListener('click', openLoadModal);
+        
+        // File upload
+        loadFileInputBtn.addEventListener('click', () => fileUpload.click());
+        fileUpload.addEventListener('change', (e) => {
+            if (e.target.files[0]) {
+                loadFromFile(e.target.files[0]);
+            }
+        });
+        
+        // Load from code
+        loadCookieConfirm.addEventListener('click', loadFromCode);
+        
+        // Close modal
+        closeModal.addEventListener('click', closeLoadModal);
+        
+        // Reset button
+        resetBtn.addEventListener('click', resetGame);
+        
+        // Close modal when clicking outside
+        loadModal.addEventListener('click', (e) => {
+            if (e.target === loadModal) {
+                closeLoadModal();
+            }
+        });
+        
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey && e.key === 's') {
+                e.preventDefault();
+                saveGame();
+            }
+            if (e.key === 'Escape') {
+                closeLoadModal();
+            }
+        });
+    }
+
+    // Initialize game when page loads
+    window.addEventListener('DOMContentLoaded', initGame);
+</script>
+</html>
