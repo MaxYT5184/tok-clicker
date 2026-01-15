@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Tok Clicker - Advanced TikTok Clicker Game</title>
+    <title>Tok Clicker</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
@@ -12,6 +12,10 @@
             --tiktok-pink: #FE2C55;
             --tiktok-purple: #7B61FF;
             --tiktok-yellow: #FFD600;
+            --tiktok-gradient: linear-gradient(90deg, #25F4EE, #FE2C55, #7B61FF);
+            --card-bg: rgba(30, 30, 30, 0.9);
+            --card-border: rgba(255, 255, 255, 0.1);
+            --hover-glow: 0 0 20px rgba(37, 244, 238, 0.5);
         }
         
         * {
@@ -23,7 +27,7 @@
         }
         
         body {
-            background: linear-gradient(135deg, #000000 0%, #121212 50%, #1a1a1a 100%);
+            background: linear-gradient(135deg, #000000 0%, #0a0a0a 50%, #121212 100%);
             color: white;
             min-height: 100vh;
             padding: 15px;
@@ -31,16 +35,35 @@
             flex-direction: column;
             align-items: center;
             overflow-x: hidden;
+            position: relative;
+        }
+        
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 30%, rgba(37, 244, 238, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 70%, rgba(254, 44, 85, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 80%, rgba(123, 97, 255, 0.1) 0%, transparent 50%);
+            z-index: -1;
+            pointer-events: none;
         }
         
         .container {
-            max-width: 1000px;
+            max-width: 1200px;
             width: 100%;
-            background-color: rgba(20, 20, 20, 0.95);
+            background: rgba(20, 20, 20, 0.95);
+            backdrop-filter: blur(10px);
             border-radius: 25px;
             padding: 25px;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.8);
-            border: 3px solid var(--tiktok-teal);
+            box-shadow: 
+                0 20px 50px rgba(0, 0, 0, 0.8),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             position: relative;
             overflow: hidden;
         }
@@ -48,111 +71,222 @@
         .container::before {
             content: '';
             position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, var(--tiktok-pink) 0%, transparent 70%);
-            opacity: 0.05;
-            z-index: 0;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--tiktok-gradient);
+            z-index: 2;
         }
         
-        * > * {
-            position: relative;
-            z-index: 1;
+        .container::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(45deg, transparent 0%, rgba(37, 244, 238, 0.05) 50%, transparent 100%);
+            pointer-events: none;
         }
         
-        h1 {
+        .header {
             text-align: center;
-            margin-bottom: 20px;
-            background: linear-gradient(90deg, var(--tiktok-teal), var(--tiktok-pink), var(--tiktok-purple));
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-            text-shadow: 0 0 15px rgba(37, 244, 238, 0.3);
-            font-size: 2.8em;
+            margin-bottom: 30px;
+            position: relative;
+        }
+        
+        .title-container {
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 15px;
+            gap: 20px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
         }
         
-        .header-icons {
-            display: flex;
-            gap: 10px;
+        h1 {
+            background: var(--tiktok-gradient);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            font-size: 3.5em;
+            font-weight: 900;
+            text-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
+            letter-spacing: 1px;
+            position: relative;
         }
         
-        .stats-container {
+        .title-badge {
+            background: var(--tiktok-gradient);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            font-weight: bold;
+            display: inline-block;
+            transform: rotate(-5deg);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .header-subtitle {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 1.1em;
+            margin-bottom: 20px;
+            max-width: 600px;
+            margin: 0 auto 20px;
+            line-height: 1.5;
+        }
+        
+        .version-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(0, 0, 0, 0.8);
+            border: 2px solid var(--tiktok-teal);
+            color: var(--tiktok-teal);
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            font-weight: bold;
+            z-index: 2;
+        }
+        
+        /* Stats Grid */
+        .stats-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
             gap: 15px;
-            margin-bottom: 25px;
+            margin-bottom: 30px;
         }
         
         @media (min-width: 768px) {
-            .stats-container {
+            .stats-grid {
                 grid-template-columns: repeat(4, 1fr);
             }
         }
         
+        @media (min-width: 1024px) {
+            .stats-grid {
+                grid-template-columns: repeat(8, 1fr);
+            }
+        }
+        
         .stat-card {
-            background: linear-gradient(145deg, rgba(37, 244, 238, 0.1), rgba(254, 44, 85, 0.1));
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
             border-radius: 15px;
-            padding: 20px 15px;
+            padding: 20px;
             text-align: center;
-            border: 2px solid;
-            border-image: linear-gradient(45deg, var(--tiktok-teal), var(--tiktok-pink)) 1;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-            transition: transform 0.3s;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--tiktok-gradient);
+            opacity: 0;
+            transition: opacity 0.3s;
         }
         
         .stat-card:hover {
             transform: translateY(-5px);
+            border-color: var(--tiktok-teal);
+            box-shadow: var(--hover-glow);
+        }
+        
+        .stat-card:hover::before {
+            opacity: 1;
         }
         
         .stat-icon {
-            font-size: 2em;
-            margin-bottom: 10px;
+            font-size: 2.5em;
+            margin-bottom: 15px;
+            background: var(--tiktok-gradient);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
         }
         
         .stat-label {
-            font-size: 0.9em;
-            color: #aaa;
-            margin-bottom: 5px;
+            font-size: 0.85em;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
         
         .stat-value {
             font-size: 1.8em;
             font-weight: bold;
             color: white;
-            text-shadow: 0 0 10px var(--tiktok-teal);
+            text-shadow: 0 2px 10px rgba(37, 244, 238, 0.3);
         }
         
-        .click-area {
+        /* Main Content Area */
+        .main-content {
+            display: flex;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
+        @media (max-width: 1024px) {
+            .main-content {
+                flex-direction: column;
+            }
+        }
+        
+        .left-panel {
+            flex: 1;
             display: flex;
             flex-direction: column;
-            align-items: center;
-            margin-bottom: 40px;
-            padding: 20px;
+            gap: 30px;
+        }
+        
+        .right-panel {
+            flex: 2;
+        }
+        
+        /* Click Area */
+        .click-area {
             background: rgba(0, 0, 0, 0.5);
-            border-radius: 20px;
-            border: 2px solid var(--tiktok-purple);
+            border-radius: 25px;
+            padding: 40px;
+            text-align: center;
+            border: 2px solid rgba(37, 244, 238, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .click-area::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at center, rgba(37, 244, 238, 0.1) 0%, transparent 70%);
+            pointer-events: none;
         }
         
         .tiktok-logo-container {
             position: relative;
-            width: 220px;
-            height: 220px;
-            margin-bottom: 25px;
+            width: 250px;
+            height: 250px;
+            margin: 0 auto 30px;
             cursor: pointer;
-            transition: transform 0.1s;
+            transition: transform 0.2s;
         }
         
-        @media (max-width: 600px) {
+        @media (max-width: 768px) {
             .tiktok-logo-container {
-                width: 180px;
-                height: 180px;
+                width: 200px;
+                height: 200px;
             }
+        }
+        
+        .tiktok-logo-container:hover {
+            transform: scale(1.05);
         }
         
         .tiktok-logo-container:active {
@@ -162,31 +296,56 @@
         .tiktok-logo {
             width: 100%;
             height: 100%;
-            background: linear-gradient(135deg, var(--tiktok-teal) 0%, var(--tiktok-pink) 50%, var(--tiktok-purple) 100%);
+            background: var(--tiktok-gradient);
             border-radius: 50%;
             display: flex;
             justify-content: center;
             align-items: center;
-            box-shadow: 0 0 50px rgba(254, 44, 85, 0.7);
             position: relative;
             overflow: hidden;
+            box-shadow: 
+                0 0 60px rgba(254, 44, 85, 0.7),
+                inset 0 0 30px rgba(255, 255, 255, 0.1);
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 60px rgba(254, 44, 85, 0.7); }
+            50% { box-shadow: 0 0 80px rgba(37, 244, 238, 0.7); }
         }
         
         .tiktok-logo::before {
             content: '';
             position: absolute;
-            width: 80%;
-            height: 80%;
-            background: black;
+            width: 85%;
+            height: 85%;
+            background: #000;
             border-radius: 50%;
+            box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.8);
         }
         
         .music-note {
             position: absolute;
             color: white;
-            font-size: 5em;
+            font-size: 6em;
             z-index: 2;
-            text-shadow: 0 0 20px var(--tiktok-teal);
+            text-shadow: 
+                0 0 20px var(--tiktok-teal),
+                0 0 40px var(--tiktok-pink);
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-10px) rotate(5deg); }
+        }
+        
+        .click-info {
+            font-size: 1.4em;
+            color: var(--tiktok-teal);
+            margin-top: 20px;
+            font-weight: bold;
+            text-shadow: 0 2px 10px rgba(37, 244, 238, 0.3);
         }
         
         .click-effects {
@@ -200,395 +359,339 @@
         
         .click-effect {
             position: absolute;
-            width: 30px;
-            height: 30px;
+            width: 40px;
+            height: 40px;
             background: radial-gradient(circle, var(--tiktok-yellow) 0%, transparent 70%);
             border-radius: 50%;
             opacity: 0;
-            animation: clickAnimation 0.8s ease-out;
+            animation: clickAnimation 1s ease-out;
         }
         
         @keyframes clickAnimation {
             0% {
-                transform: scale(0);
+                transform: scale(0) rotate(0deg);
                 opacity: 0.8;
             }
             100% {
-                transform: scale(3);
+                transform: scale(3) rotate(180deg);
                 opacity: 0;
             }
         }
         
-        .click-info {
-            font-size: 1.3em;
-            color: var(--tiktok-teal);
-            text-align: center;
-            margin-top: 15px;
-            font-weight: bold;
+        /* Tabs System */
+        .tabs-container {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 20px;
+            padding: 5px;
+            margin-bottom: 20px;
         }
         
-        .upgrades-section {
-            margin-bottom: 40px;
+        .tabs {
+            display: flex;
+            gap: 5px;
+            flex-wrap: wrap;
+        }
+        
+        .tab {
+            flex: 1;
+            min-width: 120px;
+            background: transparent;
+            border: none;
+            color: rgba(255, 255, 255, 0.7);
+            padding: 15px 20px;
+            border-radius: 15px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .tab:hover {
+            background: rgba(255, 255, 255, 0.05);
+            color: white;
+        }
+        
+        .tab.active {
+            background: var(--tiktok-gradient);
+            color: white;
+            box-shadow: 0 5px 20px rgba(37, 244, 238, 0.3);
+        }
+        
+        .tab-icon {
+            font-size: 1.2em;
+        }
+        
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        /* Tab Sections */
+        .section {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--tiktok-gradient);
         }
         
         .section-title {
             font-size: 1.8em;
-            color: var(--tiktok-teal);
-            margin-bottom: 20px;
+            color: white;
+            margin-bottom: 25px;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 15px;
         }
         
+        .section-title i {
+            background: var(--tiktok-gradient);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        
+        /* Auto Clicker Section */
+        .auto-clicker-controls {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        
+        /* Shop Items Grid */
+        .shop-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        
+        /* Upgrades Grid */
         .upgrades-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 15px;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
         }
         
-        .upgrade-card {
-            background: linear-gradient(145deg, rgba(20, 20, 20, 0.9), rgba(40, 40, 40, 0.9));
-            border-radius: 15px;
-            padding: 20px;
-            cursor: pointer;
-            transition: all 0.3s;
-            border: 2px solid transparent;
-            display: flex;
-            flex-direction: column;
+        /* Multiplier Grid */
+        .multiplier-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
             gap: 10px;
+            margin-bottom: 25px;
         }
         
-        .upgrade-card:hover {
-            transform: translateY(-8px);
-            border-color: var(--tiktok-teal);
-            box-shadow: 0 10px 20px rgba(37, 244, 238, 0.2);
+        /* Achievements Grid */
+        .achievements-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
         }
         
-        .upgrade-card:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            transform: none !important;
-            border-color: transparent !important;
-        }
-        
-        .upgrade-icon {
-            font-size: 2em;
-            color: var(--tiktok-pink);
-            margin-bottom: 5px;
-        }
-        
-        .upgrade-name {
-            font-weight: bold;
-            font-size: 1.2em;
-            color: white;
-        }
-        
-        .upgrade-desc {
-            font-size: 0.9em;
-            color: #aaa;
-            flex-grow: 1;
-        }
-        
-        .upgrade-cost {
-            color: var(--tiktok-yellow);
-            font-weight: bold;
-            font-size: 1.1em;
-        }
-        
-        .upgrade-level {
-            color: var(--tiktok-teal);
-            font-size: 0.9em;
-        }
-        
-        .save-load-section {
-            background: rgba(0, 0, 0, 0.7);
-            border-radius: 20px;
+        /* Cards */
+        .shop-card, .upgrade-card, .achievement-card {
+            background: rgba(40, 40, 40, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
             padding: 25px;
-            margin-top: 30px;
-            border: 2px solid var(--tiktok-purple);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
         }
         
-        .save-load-buttons {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 15px;
-            justify-content: center;
-            margin-top: 20px;
+        .shop-card::before, .upgrade-card::before, .achievement-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--tiktok-gradient);
+            opacity: 0;
+            transition: opacity 0.3s;
         }
         
-        .btn {
-            padding: 15px 25px;
-            border: none;
-            border-radius: 50px;
+        .shop-card:hover, .upgrade-card:hover, .achievement-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--tiktok-teal);
+            box-shadow: var(--hover-glow);
+        }
+        
+        .shop-card:hover::before, .upgrade-card:hover::before, .achievement-card:hover::before {
+            opacity: 1;
+        }
+        
+        .card-icon {
+            font-size: 3em;
+            margin-bottom: 20px;
+            background: var(--tiktok-gradient);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        
+        .card-title {
+            font-size: 1.3em;
+            color: white;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+        
+        .card-desc {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.95em;
+            line-height: 1.5;
+            margin-bottom: 20px;
+        }
+        
+        .card-cost {
+            color: var(--tiktok-yellow);
+            font-size: 1.2em;
             font-weight: bold;
+            margin-bottom: 15px;
+        }
+        
+        /* Buttons */
+        .btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 15px;
             font-size: 1em;
+            font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s;
-            display: flex;
+            transition: all 0.3s ease;
+            display: inline-flex;
             align-items: center;
             justify-content: center;
             gap: 10px;
-            min-width: 200px;
+            position: relative;
+            overflow: hidden;
+            text-decoration: none;
+            min-width: 160px;
+        }
+        
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+        
+        .btn:hover::before {
+            left: 100%;
         }
         
         .btn-primary {
-            background: linear-gradient(90deg, var(--tiktok-teal), var(--tiktok-pink));
+            background: var(--tiktok-gradient);
             color: white;
+            box-shadow: 0 5px 20px rgba(37, 244, 238, 0.3);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(37, 244, 238, 0.4);
         }
         
         .btn-secondary {
-            background: linear-gradient(90deg, var(--tiktok-purple), #7B61FF);
+            background: rgba(255, 255, 255, 0.1);
             color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-3px);
         }
         
         .btn-danger {
             background: linear-gradient(90deg, #FF416C, #FF4B2B);
             color: white;
+            box-shadow: 0 5px 20px rgba(255, 65, 108, 0.3);
+        }
+        
+        .btn-danger:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(255, 65, 108, 0.4);
         }
         
         .btn-success {
             background: linear-gradient(90deg, #00b09b, #96c93d);
             color: white;
+            box-shadow: 0 5px 20px rgba(0, 176, 155, 0.3);
         }
         
-        .btn:hover {
-            transform: scale(1.05);
-            box-shadow: 0 5px 20px rgba(255, 255, 255, 0.2);
+        .btn-success:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 176, 155, 0.4);
         }
         
         .btn-small {
-            padding: 8px 15px;
-            min-width: auto;
+            padding: 10px 20px;
             font-size: 0.9em;
+            min-width: 120px;
         }
         
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
+        .btn-full {
             width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.9);
-            z-index: 1000;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
         }
         
-        .modal-content {
-            background: linear-gradient(145deg, #1a1a1a, #000000);
-            border-radius: 20px;
-            padding: 30px;
-            max-width: 500px;
-            width: 100%;
-            border: 3px solid var(--tiktok-teal);
-            box-shadow: 0 0 50px rgba(37, 244, 238, 0.5);
-        }
-        
-        .modal-title {
-            font-size: 1.8em;
-            color: var(--tiktok-teal);
-            margin-bottom: 20px;
-            text-align: center;
-        }
-        
-        .modal-input {
-            width: 100%;
-            padding: 15px;
-            background: rgba(0, 0, 0, 0.7);
-            border: 2px solid var(--tiktok-purple);
-            border-radius: 10px;
-            color: white;
-            font-size: 1em;
-            margin-bottom: 20px;
-            font-family: monospace;
-        }
-        
-        .modal-buttons {
-            display: flex;
-            gap: 15px;
-            justify-content: center;
-        }
-        
-        .cookie-display {
-            background: rgba(0, 0, 0, 0.8);
-            border-radius: 10px;
-            padding: 15px;
-            margin-top: 20px;
-            border: 1px solid var(--tiktok-teal);
-            word-break: break-all;
-            font-family: monospace;
-            font-size: 0.8em;
-            max-height: 150px;
-            overflow-y: auto;
-        }
-        
-        .achievements-section {
-            margin-top: 40px;
-        }
-        
-        .achievements-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            gap: 15px;
-        }
-        
-        .achievement-card {
-            background: rgba(30, 30, 30, 0.9);
-            border-radius: 15px;
-            padding: 20px;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            border-left: 5px solid transparent;
-        }
-        
-        .achievement-card.unlocked {
-            border-left-color: var(--tiktok-yellow);
-            background: rgba(30, 30, 30, 0.9);
-        }
-        
-        .achievement-icon {
-            font-size: 2em;
-            color: var(--tiktok-pink);
-        }
-        
-        .achievement-locked .achievement-icon {
-            color: #555;
-        }
-        
-        .achievement-info {
-            flex-grow: 1;
-        }
-        
-        .achievement-name {
-            font-weight: bold;
-            color: white;
-        }
-        
-        .achievement-desc {
-            font-size: 0.9em;
-            color: #aaa;
-        }
-        
-        .achievement-reward {
-            color: var(--tiktok-yellow);
-            font-weight: bold;
-        }
-        
-        .notification {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: linear-gradient(90deg, var(--tiktok-teal), var(--tiktok-pink));
-            color: white;
-            padding: 15px 25px;
-            border-radius: 10px;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
-            z-index: 1001;
-            transform: translateX(150%);
-            transition: transform 0.5s;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .notification.show {
-            transform: translateX(0);
-        }
-        
-        .shop-section {
-            margin-top: 40px;
-        }
-        
-        .shop-items {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            gap: 15px;
-        }
-        
-        .shop-item {
-            background: linear-gradient(145deg, rgba(20, 20, 20, 0.9), rgba(40, 40, 40, 0.9));
-            border-radius: 15px;
-            padding: 20px;
-            text-align: center;
-            border: 2px solid var(--tiktok-purple);
-        }
-        
-        .shop-item-icon {
-            font-size: 3em;
-            color: var(--tiktok-yellow);
-            margin-bottom: 15px;
-        }
-        
-        .progress-bar {
-            width: 100%;
-            height: 10px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 5px;
-            margin: 20px 0;
-            overflow: hidden;
-        }
-        
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, var(--tiktok-teal), var(--tiktok-pink));
-            border-radius: 5px;
-            transition: width 0.5s;
-        }
-        
-        .auto-clicker-section {
-            margin: 30px 0;
-            background: rgba(0, 0, 0, 0.5);
-            border-radius: 20px;
-            padding: 25px;
-            border: 2px solid var(--tiktok-yellow);
-        }
-        
-        .auto-clicker-controls {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 15px;
-            justify-content: center;
-            margin-top: 20px;
-        }
-        
-        .multiplier-section {
-            margin: 30px 0;
-            background: rgba(0, 0, 0, 0.5);
-            border-radius: 20px;
-            padding: 25px;
-            border: 2px solid var(--tiktok-teal);
-        }
-        
-        .multiplier-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
-            gap: 10px;
-            margin-top: 20px;
-        }
-        
+        /* Multiplier Buttons */
         .multiplier-btn {
-            padding: 10px;
-            background: linear-gradient(145deg, rgba(37, 244, 238, 0.2), rgba(254, 44, 85, 0.2));
-            border: 2px solid var(--tiktok-purple);
+            padding: 12px;
+            background: rgba(40, 40, 40, 0.8);
+            border: 2px solid rgba(37, 244, 238, 0.2);
             border-radius: 10px;
             color: white;
             font-weight: bold;
+            font-size: 1.1em;
             cursor: pointer;
             transition: all 0.3s;
             text-align: center;
+            position: relative;
+            overflow: hidden;
         }
         
         .multiplier-btn:hover {
-            transform: scale(1.05);
-            background: linear-gradient(145deg, rgba(37, 244, 238, 0.4), rgba(254, 44, 85, 0.4));
+            background: rgba(37, 244, 238, 0.1);
+            border-color: var(--tiktok-teal);
+            transform: translateY(-2px);
         }
         
         .multiplier-btn.active {
-            background: linear-gradient(145deg, var(--tiktok-teal), var(--tiktok-pink));
-            box-shadow: 0 0 15px rgba(254, 44, 85, 0.7);
+            background: var(--tiktok-gradient);
+            border-color: transparent;
+            box-shadow: 0 5px 15px rgba(37, 244, 238, 0.4);
         }
         
         .multiplier-btn.disabled {
@@ -597,65 +700,275 @@
             transform: none !important;
         }
         
+        /* Clicker Status */
         .clicker-status {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 20px;
-            padding: 15px;
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: 10px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 25px;
         }
         
-        .status-item {
+        .status-card {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 15px;
+            padding: 20px;
             text-align: center;
         }
         
         .status-value {
-            font-size: 1.5em;
+            font-size: 2em;
             font-weight: bold;
-            color: var(--tiktok-yellow);
+            color: var(--tiktok-teal);
+            margin-bottom: 5px;
         }
         
         .status-label {
             font-size: 0.9em;
-            color: #aaa;
+            color: rgba(255, 255, 255, 0.7);
         }
         
-        .version-badge {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            background: linear-gradient(90deg, var(--tiktok-purple), var(--tiktok-pink));
-            color: white;
-            padding: 5px 15px;
+        /* Save/Load Section */
+        .save-load-section {
+            background: rgba(0, 0, 0, 0.5);
             border-radius: 20px;
+            padding: 30px;
+            margin-top: 30px;
+            border: 2px solid rgba(123, 97, 255, 0.3);
+        }
+        
+        .save-load-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 25px;
+        }
+        
+        .cookie-display {
+            background: rgba(0, 0, 0, 0.8);
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 20px;
+            border: 1px solid rgba(37, 244, 238, 0.3);
+            word-break: break-all;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85em;
+            max-height: 200px;
+            overflow-y: auto;
+            line-height: 1.4;
+        }
+        
+        /* Progress Bars */
+        .progress-container {
+            margin: 20px 0;
+        }
+        
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            color: rgba(255, 255, 255, 0.8);
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 6px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: var(--tiktok-gradient);
+            border-radius: 6px;
+            transition: width 0.5s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .progress-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, 
+                transparent 0%, 
+                rgba(255, 255, 255, 0.3) 50%, 
+                transparent 100%);
+            animation: shimmer 2s infinite;
+        }
+        
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+        
+        /* Modals */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .modal-content {
+            background: linear-gradient(145deg, #1a1a1a, #000000);
+            border-radius: 25px;
+            padding: 40px;
+            max-width: 500px;
+            width: 100%;
+            border: 2px solid var(--tiktok-teal);
+            box-shadow: 
+                0 0 60px rgba(37, 244, 238, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .modal-content::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--tiktok-gradient);
+        }
+        
+        .modal-title {
+            font-size: 2em;
+            color: white;
+            margin-bottom: 25px;
+            text-align: center;
+            background: var(--tiktok-gradient);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        
+        .modal-input {
+            width: 100%;
+            padding: 18px;
+            background: rgba(0, 0, 0, 0.7);
+            border: 2px solid rgba(123, 97, 255, 0.5);
+            border-radius: 12px;
+            color: white;
+            font-size: 1em;
+            margin-bottom: 25px;
+            font-family: 'Courier New', monospace;
+            transition: border-color 0.3s;
+        }
+        
+        .modal-input:focus {
+            outline: none;
+            border-color: var(--tiktok-teal);
+            box-shadow: 0 0 15px rgba(37, 244, 238, 0.3);
+        }
+        
+        .modal-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+        
+        /* Notification */
+        .notification {
+            position: fixed;
+            top: 30px;
+            right: 30px;
+            background: linear-gradient(90deg, #1a1a1a, #000000);
+            color: white;
+            padding: 20px 30px;
+            border-radius: 15px;
+            box-shadow: 
+                0 10px 30px rgba(0, 0, 0, 0.5),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            z-index: 1001;
+            transform: translateX(150%);
+            transition: transform 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            border-left: 4px solid var(--tiktok-teal);
+            max-width: 400px;
+        }
+        
+        .notification.show {
+            transform: translateX(0);
+        }
+        
+        .notification-icon {
+            font-size: 1.5em;
+        }
+        
+        /* Badges */
+        .badge {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 12px;
             font-size: 0.8em;
             font-weight: bold;
-            z-index: 2;
+            margin-left: 10px;
         }
         
-        /* Mobile optimizations */
-        @media (max-width: 480px) {
+        .badge-new {
+            background: var(--tiktok-gradient);
+            color: white;
+        }
+        
+        .badge-sale {
+            background: linear-gradient(90deg, #FFD600, #FF9500);
+            color: black;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
             .container {
-                padding: 15px;
+                padding: 20px;
                 border-radius: 20px;
             }
             
             h1 {
-                font-size: 2em;
+                font-size: 2.5em;
             }
             
-            .btn {
-                min-width: 100%;
-                padding: 12px 20px;
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
             }
             
-            .save-load-buttons {
+            .tabs {
                 flex-direction: column;
             }
             
-            .upgrades-grid, .achievements-grid, .shop-items {
+            .tab {
+                min-width: 100%;
+            }
+            
+            .modal-content {
+                padding: 25px;
+            }
+            
+            .modal-buttons {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+            }
+            
+            .upgrades-grid,
+            .shop-grid,
+            .achievements-grid {
                 grid-template-columns: 1fr;
             }
             
@@ -664,213 +977,363 @@
             }
             
             .auto-clicker-controls {
-                flex-direction: column;
+                grid-template-columns: 1fr;
             }
             
-            .version-badge {
-                position: relative;
-                top: 0;
-                right: 0;
-                margin: 0 auto 20px;
-                width: fit-content;
+            .clicker-status {
+                grid-template-columns: 1fr;
+            }
+            
+            .save-load-buttons {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        /* Scrollbar Styling */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 5px;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: var(--tiktok-gradient);
+            border-radius: 5px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(90deg, #25F4EE, #FE2C55);
+        }
+        
+        /* Utility Classes */
+        .text-center {
+            text-align: center;
+        }
+        
+        .text-gradient {
+            background: var(--tiktok-gradient);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        
+        .mb-20 {
+            margin-bottom: 20px;
+        }
+        
+        .mt-20 {
+            margin-top: 20px;
+        }
+        
+        .glow {
+            text-shadow: 0 0 10px currentColor;
+        }
+        
+        /* Particle Background */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+        
+        .particle {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: var(--tiktok-teal);
+            border-radius: 50%;
+            animation: floatParticle 20s infinite linear;
+        }
+        
+        @keyframes floatParticle {
+            0% {
+                transform: translateY(100vh) translateX(0);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100px) translateX(100px);
+                opacity: 0;
             }
         }
     </style>
 </head>
 <body>
+    <!-- Particle Background -->
+    <div class="particles" id="particles"></div>
+    
     <div class="container">
-        <div class="version-badge" id="version-badge">v2.2.0</div>
+        <div class="version-badge" id="version-badge">v24.02.15.1</div>
         
-        <h1>
-            <i class="fab fa-tiktok"></i>
-            TOK CLICKER PRO
-            <div class="header-icons">
-                <i class="fas fa-music"></i>
-                <i class="fas fa-video"></i>
-                <i class="fas fa-fire"></i>
+        <div class="header">
+            <div class="title-container">
+                <h1>TOK CLICKER PRO</h1>
+                <div class="title-badge">ULTRA EDITION</div>
             </div>
-        </h1>
+            <p class="header-subtitle">
+                Build your TikTok empire! Click, upgrade, and become the ultimate influencer with advanced features and unbeatable security.
+            </p>
+        </div>
         
-        <div class="stats-container">
+        <!-- Stats Grid -->
+        <div class="stats-grid">
             <div class="stat-card">
                 <div class="stat-icon">👁️</div>
-                <div class="stat-label">TOTAL VIEWS</div>
+                <div class="stat-label">Total Views</div>
                 <div id="views" class="stat-value">0</div>
             </div>
             <div class="stat-card">
                 <div class="stat-icon">⚡</div>
-                <div class="stat-label">VIEWS/CLICK</div>
+                <div class="stat-label">Views/Click</div>
                 <div id="views-per-click" class="stat-value">1</div>
             </div>
             <div class="stat-card">
                 <div class="stat-icon">🚀</div>
-                <div class="stat-label">VIEWS/SECOND</div>
+                <div class="stat-label">Views/Second</div>
                 <div id="views-per-second" class="stat-value">0</div>
             </div>
             <div class="stat-card">
                 <div class="stat-icon">👥</div>
-                <div class="stat-label">FOLLOWERS</div>
+                <div class="stat-label">Followers</div>
                 <div id="followers" class="stat-value">0</div>
             </div>
             <div class="stat-card">
                 <div class="stat-icon">💰</div>
-                <div class="stat-label">COINS</div>
+                <div class="stat-label">Coins</div>
                 <div id="coins" class="stat-value">0</div>
             </div>
             <div class="stat-card">
                 <div class="stat-icon">🏆</div>
-                <div class="stat-label">PRESTIGE</div>
+                <div class="stat-label">Prestige</div>
                 <div id="prestige" class="stat-value">0</div>
             </div>
             <div class="stat-card">
                 <div class="stat-icon">🔥</div>
-                <div class="stat-label">STREAK</div>
+                <div class="stat-label">Streak</div>
                 <div id="streak" class="stat-value">0</div>
             </div>
             <div class="stat-card">
                 <div class="stat-icon">📈</div>
-                <div class="stat-label">MULTIPLIER</div>
+                <div class="stat-label">Multiplier</div>
                 <div id="multiplier" class="stat-value">1.00x</div>
             </div>
         </div>
         
-        <div class="click-area">
-            <div class="tiktok-logo-container" id="click-button">
-                <div class="tiktok-logo">
-                    <div class="music-note">♪</div>
+        <!-- Main Content Area -->
+        <div class="main-content">
+            <!-- Left Panel -->
+            <div class="left-panel">
+                <!-- Click Area -->
+                <div class="click-area">
+                    <div class="tiktok-logo-container" id="click-button">
+                        <div class="tiktok-logo">
+                            <div class="music-note">♪</div>
+                        </div>
+                        <div class="click-effects" id="click-effects"></div>
+                    </div>
+                    <div class="click-info">Click the TikTok logo to get views!</div>
+                    
+                    <!-- Streak Progress -->
+                    <div class="progress-container">
+                        <div class="progress-label">
+                            <span>Daily Streak</span>
+                            <span id="streak-days">0/7 days</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div id="streak-progress" class="progress-fill" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- Auto Clicker Controls -->
+                    <div class="auto-clicker-controls mt-20">
+                        <button class="btn btn-success btn-full" id="start-auto-clicker">
+                            <i class="fas fa-play"></i> Start Auto-Clicker (1.9 CPS)
+                        </button>
+                        <button class="btn btn-danger btn-full" id="stop-auto-clicker">
+                            <i class="fas fa-stop"></i> Stop Auto-Clicker
+                        </button>
+                        <button class="btn btn-secondary btn-full" id="boost-auto-clicker">
+                            <i class="fas fa-bolt"></i> Boost to 3.8 CPS (100 coins)
+                        </button>
+                    </div>
+                    
+                    <!-- Auto Clicker Status -->
+                    <div class="clicker-status">
+                        <div class="status-card">
+                            <div class="status-label">Auto-Clicker Status</div>
+                            <div id="auto-clicker-status" class="status-value">OFF</div>
+                        </div>
+                        <div class="status-card">
+                            <div class="status-label">Speed</div>
+                            <div id="auto-clicker-speed" class="status-value">1.9 CPS</div>
+                        </div>
+                        <div class="status-card">
+                            <div class="status-label">Total Auto-Clicks</div>
+                            <div id="total-auto-clicks" class="status-value">0</div>
+                        </div>
+                    </div>
                 </div>
-                <div class="click-effects" id="click-effects"></div>
-            </div>
-            <div class="click-info">Tap the TikTok logo to get views!</div>
-            <div class="progress-bar">
-                <div id="streak-progress" class="progress-fill" style="width: 0%"></div>
-            </div>
-            <div>Daily Streak: <span id="streak-days">0/7</span> days</div>
-        </div>
-        
-        <!-- FREE AUTO-CLICKER SECTION -->
-        <div class="auto-clicker-section">
-            <h2 class="section-title"><i class="fas fa-robot"></i> FREE AUTO-CLICKER</h2>
-            <p style="text-align: center; margin-bottom: 20px; color: #aaa;">
-                Free auto-clicker that clicks at 1.9 clicks per second! Works while tab is active.
-            </p>
-            <div class="auto-clicker-controls">
-                <button class="btn btn-success" id="start-auto-clicker">
-                    <i class="fas fa-play"></i> START AUTO-CLICKER (FREE)
-                </button>
-                <button class="btn btn-danger" id="stop-auto-clicker">
-                    <i class="fas fa-stop"></i> STOP AUTO-CLICKER
-                </button>
-                <button class="btn btn-secondary" id="boost-auto-clicker">
-                    <i class="fas fa-bolt"></i> BOOST TO 3.8 CPS (100 coins)
-                </button>
-            </div>
-            <div class="clicker-status">
-                <div class="status-item">
-                    <div class="status-label">AUTO-CLICKER</div>
-                    <div id="auto-clicker-status" class="status-value">OFF</div>
+                
+                <!-- Quick Stats -->
+                <div class="section">
+                    <h3 class="section-title"><i class="fas fa-chart-bar"></i> Quick Stats</h3>
+                    <div class="clicker-status">
+                        <div class="status-card">
+                            <div class="status-label">Total Clicks</div>
+                            <div id="total-clicks" class="status-value">0</div>
+                        </div>
+                        <div class="status-card">
+                            <div class="status-label">Play Time</div>
+                            <div id="play-time" class="status-value">0s</div>
+                        </div>
+                        <div class="status-card">
+                            <div class="status-label">Total Multiplier</div>
+                            <div id="total-multiplier" class="status-value">1.00x</div>
+                        </div>
+                    </div>
                 </div>
-                <div class="status-item">
-                    <div class="status-label">SPEED</div>
-                    <div id="auto-clicker-speed" class="status-value">1.9 CPS</div>
-                </div>
-                <div class="status-item">
-                    <div class="status-label">TOTAL AUTO-CLICKS</div>
-                    <div id="total-auto-clicks" class="status-value">0</div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- MULTIPLIER SECTION -->
-        <div class="multiplier-section">
-            <h2 class="section-title"><i class="fas fa-chart-line"></i> MULTIPLIER UPGRADES</h2>
-            <p style="text-align: center; margin-bottom: 20px; color: #aaa;">
-                Buy permanent multipliers to multiply ALL your earnings! (Cost increases with level)
-            </p>
-            <div class="multiplier-grid" id="multiplier-container">
-                <!-- Multipliers will be generated here -->
-            </div>
-            <div style="text-align: center; margin-top: 20px;">
-                <div style="color: var(--tiktok-yellow); font-weight: bold;">
-                    Current Total Multiplier: <span id="total-multiplier">1.00x</span>
-                </div>
-                <div style="color: #aaa; margin-top: 10px;">
-                    Next Multiplier Cost: <span id="next-multiplier-cost">100</span> coins
-                </div>
-            </div>
-        </div>
-        
-        <div class="upgrades-section">
-            <h2 class="section-title"><i class="fas fa-arrow-up"></i> UPGRADES</h2>
-            <div class="upgrades-grid" id="upgrades-container">
-                <!-- Upgrades will be generated here -->
-            </div>
-        </div>
-        
-        <div class="shop-section">
-            <h2 class="section-title"><i class="fas fa-store"></i> SHOP</h2>
-            <div class="shop-items">
-                <div class="shop-item">
-                    <div class="shop-item-icon">🎭</div>
-                    <div class="upgrade-name">Effects Pack</div>
-                    <div class="upgrade-desc">Unlock special click effects</div>
-                    <div class="upgrade-cost">Cost: 1,000 coins</div>
-                    <button class="btn btn-secondary btn-small" onclick="buyShopItem('effects')">BUY</button>
-                </div>
-                <div class="shop-item">
-                    <div class="shop-item-icon">🌈</div>
-                    <div class="upgrade-name">Rainbow Theme</div>
-                    <div class="upgrade-desc">Change the game colors</div>
-                    <div class="upgrade-cost">Cost: 5,000 coins</div>
-                    <button class="btn btn-secondary btn-small" onclick="buyShopItem('theme')">BUY</button>
-                </div>
-                <div class="shop-item">
-                    <div class="shop-item-icon">⚡</div>
-                    <div class="upgrade-name">Auto-Clicker Boost</div>
-                    <div class="upgrade-desc">Double auto-clicker speed for 1 hour</div>
-                    <div class="upgrade-cost">Cost: 500 coins</div>
-                    <button class="btn btn-secondary btn-small" onclick="buyShopItem('autoclicker')">BUY</button>
-                </div>
-                <div class="shop-item">
-                    <div class="shop-item-icon">💎</div>
-                    <div class="upgrade-name">Premium Multiplier</div>
-                    <div class="upgrade-desc">+0.5x to all multipliers</div>
-                    <div class="upgrade-cost">Cost: 10,000 coins</div>
-                    <button class="btn btn-secondary btn-small" onclick="buyShopItem('premium')">BUY</button>
-                </div>
-            </div>
-        </div>
-        
-        <div class="achievements-section">
-            <h2 class="section-title"><i class="fas fa-trophy"></i> ACHIEVEMENTS</h2>
-            <div class="achievements-grid" id="achievements-container">
-                <!-- Achievements will be generated here -->
-            </div>
-        </div>
-        
-        <div class="save-load-section">
-            <h2 class="section-title"><i class="fas fa-save"></i> SAVE & LOAD</h2>
-            <p style="text-align: center; margin-bottom: 20px; color: #aaa;">
-                Your game is protected with advanced encryption. Cheating is impossible!
-            </p>
-            
-            <div class="save-load-buttons">
-                <button class="btn btn-primary" id="save-btn">
-                    <i class="fas fa-download"></i> SAVE GAME & DOWNLOAD FILE
-                </button>
-                <button class="btn btn-secondary" id="load-file-btn">
-                    <i class="fas fa-upload"></i> LOAD FROM FILE
-                </button>
-                <button class="btn btn-secondary" id="load-cookie-btn">
-                    <i class="fas fa-key"></i> LOAD FROM CODE
-                </button>
-                <button class="btn btn-danger" id="reset-btn">
-                    <i class="fas fa-trash"></i> RESET GAME
-                </button>
             </div>
             
-            <div class="cookie-display" id="cookie-display">
-                Your encrypted save code will appear here after saving...
+            <!-- Right Panel -->
+            <div class="right-panel">
+                <!-- Tabs Navigation -->
+                <div class="tabs-container">
+                    <div class="tabs">
+                        <button class="tab active" data-tab="upgrades">
+                            <i class="fas fa-arrow-up tab-icon"></i> Upgrades
+                        </button>
+                        <button class="tab" data-tab="multipliers">
+                            <i class="fas fa-chart-line tab-icon"></i> Multipliers
+                        </button>
+                        <button class="tab" data-tab="shop">
+                            <i class="fas fa-store tab-icon"></i> Shop
+                        </button>
+                        <button class="tab" data-tab="achievements">
+                            <i class="fas fa-trophy tab-icon"></i> Achievements
+                        </button>
+                        <button class="tab" data-tab="save">
+                            <i class="fas fa-save tab-icon"></i> Save/Load
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Tab Contents -->
+                <div class="tab-content active" id="upgrades-tab">
+                    <div class="section">
+                        <h3 class="section-title"><i class="fas fa-arrow-up"></i> Content Upgrades</h3>
+                        <div class="upgrades-grid" id="upgrades-container">
+                            <!-- Upgrades will be generated here -->
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="tab-content" id="multipliers-tab">
+                    <div class="section">
+                        <h3 class="section-title"><i class="fas fa-chart-line"></i> Multiplier Upgrades</h3>
+                        <p class="mb-20" style="color: rgba(255,255,255,0.7); text-align: center;">
+                            Buy permanent multipliers to multiply ALL your earnings! Each multiplier stacks multiplicatively.
+                        </p>
+                        <div class="multiplier-grid" id="multiplier-container">
+                            <!-- Multipliers will be generated here -->
+                        </div>
+                        <div class="text-center mt-20">
+                            <div style="font-size: 1.3em; margin-bottom: 10px;">
+                                <span style="color: rgba(255,255,255,0.7);">Next Multiplier Cost:</span>
+                                <span id="next-multiplier-cost" style="color: var(--tiktok-yellow); font-weight: bold; margin-left: 10px;">100</span>
+                                <span style="color: var(--tiktok-yellow);"> coins</span>
+                            </div>
+                            <div style="font-size: 1.1em;">
+                                <span style="color: rgba(255,255,255,0.7);">Total Multiplier Bonus:</span>
+                                <span id="multiplier-bonus" style="color: var(--tiktok-teal); font-weight: bold; margin-left: 10px;">1.00x</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="tab-content" id="shop-tab">
+                    <div class="section">
+                        <h3 class="section-title"><i class="fas fa-store"></i> Premium Shop</h3>
+                        <div class="shop-grid">
+                            <div class="shop-card">
+                                <div class="card-icon">🎭</div>
+                                <div class="card-title">Effects Pack</div>
+                                <div class="card-desc">Unlock special visual effects for your clicks and upgrades.</div>
+                                <div class="card-cost">1,000 coins</div>
+                                <button class="btn btn-secondary btn-full" onclick="buyShopItem('effects')">BUY NOW</button>
+                            </div>
+                            <div class="shop-card">
+                                <div class="card-icon">🌈</div>
+                                <div class="card-title">Rainbow Theme</div>
+                                <div class="card-desc">Change the game colors to a vibrant rainbow theme.</div>
+                                <div class="card-cost">5,000 coins</div>
+                                <button class="btn btn-secondary btn-full" onclick="buyShopItem('theme')">BUY NOW</button>
+                            </div>
+                            <div class="shop-card">
+                                <div class="card-icon">⚡</div>
+                                <div class="card-title">Auto-Clicker Boost</div>
+                                <div class="card-desc">Double your auto-clicker speed for 1 hour.</div>
+                                <div class="card-cost">500 coins</div>
+                                <button class="btn btn-secondary btn-full" onclick="buyShopItem('autoclicker')">BUY NOW</button>
+                            </div>
+                            <div class="shop-card">
+                                <div class="card-icon">💎</div>
+                                <div class="card-title">Premium Multiplier</div>
+                                <div class="card-desc">Add +0.5x to all your multipliers permanently.</div>
+                                <div class="card-cost">10,000 coins</div>
+                                <button class="btn btn-secondary btn-full" onclick="buyShopItem('premium')">BUY NOW</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="tab-content" id="achievements-tab">
+                    <div class="section">
+                        <h3 class="section-title"><i class="fas fa-trophy"></i> Achievements</h3>
+                        <div class="achievements-grid" id="achievements-container">
+                            <!-- Achievements will be generated here -->
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="tab-content" id="save-tab">
+                    <div class="save-load-section">
+                        <h3 class="section-title"><i class="fas fa-save"></i> Save & Load System</h3>
+                        <p style="text-align: center; margin-bottom: 25px; color: rgba(255,255,255,0.7);">
+                            Your progress is protected with military-grade encryption. Save files are version-locked and cannot be tampered with.
+                        </p>
+                        
+                        <div class="save-load-buttons">
+                            <button class="btn btn-primary" id="save-btn">
+                                <i class="fas fa-download"></i> Save & Download File
+                            </button>
+                            <button class="btn btn-secondary" id="load-file-btn">
+                                <i class="fas fa-upload"></i> Load from File
+                            </button>
+                            <button class="btn btn-secondary" id="load-cookie-btn">
+                                <i class="fas fa-key"></i> Load from Code
+                            </button>
+                            <button class="btn btn-danger" id="reset-btn">
+                                <i class="fas fa-trash"></i> Reset Game
+                            </button>
+                        </div>
+                        
+                        <div class="cookie-display mt-20" id="cookie-display">
+                            Your encrypted save code will appear here after saving...
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -878,20 +1341,20 @@
     <!-- Load Modal -->
     <div class="modal" id="load-modal">
         <div class="modal-content">
-            <h2 class="modal-title">LOAD GAME</h2>
-            <p style="margin-bottom: 20px; color: #aaa; text-align: center;">
+            <h2 class="modal-title">Load Game</h2>
+            <p style="margin-bottom: 25px; color: rgba(255,255,255,0.7); text-align: center;">
                 Choose how to load your game:
             </p>
-            <div style="display: flex; flex-direction: column; gap: 15px;">
+            <div style="display: flex; flex-direction: column; gap: 20px;">
                 <button class="btn btn-primary" id="load-file-input-btn">
                     <i class="fas fa-file-upload"></i> Upload Save File
                 </button>
                 <input type="file" id="file-upload" accept=".tok,.txt" style="display: none;">
-                <div style="text-align: center; color: #aaa;">OR</div>
-                <textarea class="modal-input" id="cookie-input" placeholder="Paste your save code here..." rows="5"></textarea>
+                <div style="text-align: center; color: rgba(255,255,255,0.5);">OR</div>
+                <textarea class="modal-input" id="cookie-input" placeholder="Paste your encrypted save code here..." rows="6"></textarea>
                 <div class="modal-buttons">
-                    <button class="btn btn-primary" id="load-cookie-confirm">LOAD CODE</button>
-                    <button class="btn btn-danger" id="close-modal">CANCEL</button>
+                    <button class="btn btn-primary" id="load-cookie-confirm">Load Code</button>
+                    <button class="btn btn-danger" id="close-modal">Cancel</button>
                 </div>
             </div>
         </div>
@@ -900,26 +1363,32 @@
     <!-- Version Warning Modal -->
     <div class="modal" id="version-modal">
         <div class="modal-content">
-            <h2 class="modal-title" style="color: #FFD600;">⚠️ VERSION WARNING</h2>
-            <div style="text-align: center; margin-bottom: 20px;">
-                <i class="fas fa-exclamation-triangle" style="font-size: 4em; color: #FFD600; margin-bottom: 15px;"></i>
-                <p id="version-warning-text" style="color: #aaa; margin-bottom: 20px;">
+            <h2 class="modal-title">⚠️ Version Warning</h2>
+            <div style="text-align: center; margin-bottom: 25px;">
+                <i class="fas fa-exclamation-triangle" style="font-size: 4em; color: #FFD600; margin-bottom: 20px;"></i>
+                <p id="version-warning-text" style="color: rgba(255,255,255,0.7); margin-bottom: 25px; font-size: 1.1em;">
                     This save file is from an outdated version!
                 </p>
-                <div style="background: rgba(255, 214, 0, 0.1); padding: 15px; border-radius: 10px; margin-bottom: 20px;">
-                    <div><strong>Save Version:</strong> <span id="save-version" style="color: #FFD600;">Unknown</span></div>
-                    <div><strong>Current Version:</strong> <span id="current-version" style="color: #25F4EE;">Unknown</span></div>
+                <div style="background: rgba(255, 214, 0, 0.1); padding: 20px; border-radius: 15px; margin-bottom: 25px; border: 1px solid rgba(255, 214, 0, 0.3);">
+                    <div style="margin-bottom: 10px;">
+                        <span style="color: rgba(255,255,255,0.7);">Save Version:</span>
+                        <span id="save-version" style="color: #FFD600; font-weight: bold; margin-left: 10px;">Unknown</span>
+                    </div>
+                    <div>
+                        <span style="color: rgba(255,255,255,0.7);">Current Version:</span>
+                        <span id="current-version" style="color: #25F4EE; font-weight: bold; margin-left: 10px;">Unknown</span>
+                    </div>
                 </div>
-                <p style="color: #aaa; font-size: 0.9em;">
+                <p style="color: rgba(255,255,255,0.7); font-size: 0.95em;">
                     Loading outdated saves may cause issues. Some features may not work correctly.
                 </p>
             </div>
             <div class="modal-buttons">
-                <button class="btn btn-warning" id="force-load-btn">
-                    <i class="fas fa-exclamation-triangle"></i> LOAD ANYWAY
+                <button class="btn btn-danger" id="force-load-btn">
+                    <i class="fas fa-exclamation-triangle"></i> Load Anyway
                 </button>
-                <button class="btn btn-danger" id="cancel-load-btn">
-                    <i class="fas fa-times"></i> CANCEL
+                <button class="btn btn-secondary" id="cancel-load-btn">
+                    <i class="fas fa-times"></i> Cancel
                 </button>
             </div>
         </div>
@@ -927,84 +1396,26 @@
     
     <!-- Notification -->
     <div class="notification" id="notification">
-        <i class="fas fa-check-circle"></i>
+        <i class="fas fa-check-circle notification-icon"></i>
         <span id="notification-text">Game saved successfully!</span>
     </div>
 </body>
 
 <script>
-    // ==================== VERSION MANAGEMENT SYSTEM ====================
-    // Version format: YY.MM.DD.X (Year.Month.Day.Revision)
-    // Example: 24.02.15.1 = 2024, February, 15th, Revision 1
-    // This gets updated monthly to invalidate old saves
-    
+    // ==================== ENHANCED GAME STATE ====================
     const VERSION_MANAGER = {
-        // Current game version - UPDATE THIS MONTHLY
-        CURRENT_VERSION: "24.02.15.1", // Will be updated to "24.03.15.1" next month
-        
-        // Version history with supported features
+        CURRENT_VERSION: "24.02.15.1",
         VERSION_HISTORY: {
-            "24.01.15.1": {
-                name: "January 2024",
-                supported: false, // Old version, not supported
-                changes: ["Initial release", "Basic clicker mechanics"]
-            },
-            "24.02.15.1": {
-                name: "February 2024",
-                supported: true, // Current version
-                changes: [
-                    "Added auto-clicker (1.9 CPS)",
-                    "Added multiplier system (1x-100x)",
-                    "Enhanced encryption",
-                    "Version management system"
-                ]
+            "24.01.15.1": { name: "January 2024", supported: false, changes: ["Initial release"] },
+            "24.02.15.1": { 
+                name: "February 2024", 
+                supported: true, 
+                changes: ["Auto-clicker system", "Multiplier upgrades", "Tab interface", "Enhanced visuals"] 
             }
-        },
-        
-        // Check if a version is supported
-        isVersionSupported: function(version) {
-            const versionData = this.VERSION_HISTORY[version];
-            return versionData && versionData.supported;
-        },
-        
-        // Get version display name
-        getVersionName: function(version) {
-            const versionData = this.VERSION_HISTORY[version];
-            return versionData ? versionData.name : `Version ${version}`;
-        },
-        
-        // Compare versions (returns true if version1 is older than version2)
-        isOlderThan: function(version1, version2) {
-            const v1 = version1.split('.').map(Number);
-            const v2 = version2.split('.').map(Number);
-            
-            for (let i = 0; i < Math.max(v1.length, v2.length); i++) {
-                const part1 = v1[i] || 0;
-                const part2 = v2[i] || 0;
-                
-                if (part1 < part2) return true;
-                if (part1 > part2) return false;
-            }
-            return false; // Same version
-        },
-        
-        // Get months difference between versions
-        getMonthsDifference: function(version1, version2) {
-            const v1 = version1.split('.').map(Number);
-            const v2 = version2.split('.').map(Number);
-            
-            const year1 = 2000 + v1[0];
-            const year2 = 2000 + v2[0];
-            const month1 = v1[1];
-            const month2 = v2[1];
-            
-            return (year2 - year1) * 12 + (month2 - month1);
         }
     };
 
-    // Enhanced Game State with version tracking
     let gameState = {
-        // Core stats
         views: 0,
         viewsPerClick: 1,
         viewsPerSecond: 0,
@@ -1015,34 +1426,31 @@
         lastPlayDate: null,
         multiplier: 1,
         totalClicks: 0,
+        playTime: 0,
         
-        // Auto-clicker system
         autoClicker: {
             active: false,
-            speed: 1.9, // Clicks per second
+            speed: 1.9,
             boosted: false,
             totalAutoClicks: 0,
             interval: null
         },
         
-        // Multiplier system (1x to 100x)
         multipliers: [],
         
-        // Upgrades system
         upgrades: {
-            phone: { level: 0, cost: 50, multiplier: 1, name: "Better Phone", desc: "Better quality videos", icon: "📱" },
-            hashtags: { level: 0, cost: 200, multiplier: 2, name: "Hashtags", desc: "Use trending hashtags", icon: "🏷️" },
-            editing: { level: 0, cost: 500, multiplier: 5, name: "Editing App", desc: "Professional editing", icon: "🎬" },
-            trends: { level: 0, cost: 1000, multiplier: 10, name: "Follow Trends", desc: "Jump on viral trends", icon: "🔥" },
-            collab: { level: 0, cost: 2500, multiplier: 20, name: "Collabs", desc: "Collaborate with creators", icon: "🤝" },
-            algorithm: { level: 0, cost: 5000, multiplier: 50, name: "Algorithm", desc: "Understand the algorithm", icon: "🤖" },
-            sponsor: { level: 0, cost: 15000, multiplier: 100, name: "Sponsors", desc: "Get brand deals", icon: "💰" },
-            verified: { level: 0, cost: 50000, multiplier: 200, name: "Verified", desc: "Get verified badge", icon: "✅" },
-            team: { level: 0, cost: 150000, multiplier: 500, name: "Team", desc: "Hire a content team", icon: "👥" },
-            studio: { level: 0, cost: 500000, multiplier: 1000, name: "Studio", desc: "Build your own studio", icon: "🎥" }
+            phone: { level: 0, cost: 50, multiplier: 1, name: "Smartphone Pro", desc: "4K video quality", icon: "📱" },
+            hashtags: { level: 0, cost: 200, multiplier: 2, name: "Hashtag Master", desc: "Trending hashtags", icon: "🏷️" },
+            editing: { level: 0, cost: 500, multiplier: 5, name: "Editing Suite", desc: "Professional edits", icon: "🎬" },
+            trends: { level: 0, cost: 1000, multiplier: 10, name: "Trend Hunter", desc: "Viral content", icon: "🔥" },
+            collab: { level: 0, cost: 2500, multiplier: 20, name: "Collab Network", desc: "Top creators", icon: "🤝" },
+            algorithm: { level: 0, cost: 5000, multiplier: 50, name: "Algorithm Hack", desc: "Beat the system", icon: "🤖" },
+            sponsor: { level: 0, cost: 15000, multiplier: 100, name: "Brand Deals", desc: "Big sponsors", icon: "💰" },
+            verified: { level: 0, cost: 50000, multiplier: 200, name: "Verified Badge", desc: "Official status", icon: "✅" },
+            team: { level: 0, cost: 150000, multiplier: 500, name: "Content Team", desc: "Professional crew", icon: "👥" },
+            studio: { level: 0, cost: 500000, multiplier: 1000, name: "Production Studio", desc: "Hollywood level", icon: "🎥" }
         },
         
-        // Shop items
         shop: {
             effects: { bought: false, cost: 1000, name: "Effects Pack" },
             theme: { bought: false, cost: 5000, name: "Rainbow Theme" },
@@ -1050,7 +1458,6 @@
             premium: { bought: false, cost: 10000, name: "Premium Multiplier" }
         },
         
-        // Achievements system
         achievements: {
             firstVideo: { unlocked: true, name: "First Video", desc: "Upload your first TikTok", reward: 100, icon: "🎬" },
             viral: { unlocked: false, name: "Viral Video", desc: "Reach 10,000 views", reward: 1000, icon: "🔥" },
@@ -1059,405 +1466,147 @@
             influencer: { unlocked: false, name: "Influencer", desc: "Get 10,000 followers", reward: 50000, icon: "🌟" },
             millionaire: { unlocked: false, name: "Millionaire", desc: "Get 1,000,000 followers", reward: 250000, icon: "💎" },
             clickMaster: { unlocked: false, name: "Click Master", desc: "Make 10,000 clicks", reward: 10000, icon: "⚡" },
-            dailyPlayer: { unlocked: false, name: "Daily Player", desc: "Play for 7 days straight", reward: 15000, icon: "📅" },
-            autoClickerPro: { unlocked: false, name: "Auto-Clicker Pro", desc: "Make 100,000 auto-clicks", reward: 50000, icon: "🤖" },
-            multiplierKing: { unlocked: false, name: "Multiplier King", desc: "Reach 50x total multiplier", reward: 100000, icon: "👑" }
+            dailyPlayer: { unlocked: false, name: "Daily Player", desc: "Play for 7 days straight", reward: 15000, icon: "📅" }
         },
         
-        // Game metadata with version
         gameVersion: VERSION_MANAGER.CURRENT_VERSION,
         creationDate: new Date().toISOString(),
         lastSaveDate: null,
-        playTime: 0,
         securityHash: "",
-        
-        // Version compatibility
         versionCompatible: true
     };
 
-    // Initialize multipliers (1x to 100x)
+    // Initialize
     function initializeMultipliers() {
         gameState.multipliers = [];
         for (let i = 1; i <= 100; i++) {
             gameState.multipliers.push({
                 level: i,
-                bought: i === 1, // 1x is free
-                cost: Math.floor(100 * Math.pow(1.3, i - 1)), // Exponential cost increase
+                bought: i === 1,
+                cost: Math.floor(100 * Math.pow(1.3, i - 1)),
                 multiplier: i
             });
         }
     }
 
     // DOM Elements
-    const viewsEl = document.getElementById('views');
-    const viewsPerClickEl = document.getElementById('views-per-click');
-    const viewsPerSecondEl = document.getElementById('views-per-second');
-    const followersEl = document.getElementById('followers');
-    const coinsEl = document.getElementById('coins');
-    const prestigeEl = document.getElementById('prestige');
-    const streakEl = document.getElementById('streak');
-    const multiplierEl = document.getElementById('multiplier');
-    const streakDaysEl = document.getElementById('streak-days');
-    const streakProgressEl = document.getElementById('streak-progress');
-    const clickButton = document.getElementById('click-button');
-    const clickEffects = document.getElementById('click-effects');
-    const upgradesContainer = document.getElementById('upgrades-container');
-    const achievementsContainer = document.getElementById('achievements-container');
-    const saveBtn = document.getElementById('save-btn');
-    const loadFileBtn = document.getElementById('load-file-btn');
-    const loadCookieBtn = document.getElementById('load-cookie-btn');
-    const resetBtn = document.getElementById('reset-btn');
-    const loadModal = document.getElementById('load-modal');
-    const versionModal = document.getElementById('version-modal');
-    const fileUpload = document.getElementById('file-upload');
-    const loadFileInputBtn = document.getElementById('load-file-input-btn');
-    const cookieInput = document.getElementById('cookie-input');
-    const loadCookieConfirm = document.getElementById('load-cookie-confirm');
-    const closeModal = document.getElementById('close-modal');
-    const cookieDisplay = document.getElementById('cookie-display');
-    const notification = document.getElementById('notification');
-    const notificationText = document.getElementById('notification-text');
-    const versionBadge = document.getElementById('version-badge');
-    
-    // Version modal elements
-    const versionWarningText = document.getElementById('version-warning-text');
-    const saveVersionEl = document.getElementById('save-version');
-    const currentVersionEl = document.getElementById('current-version');
-    const forceLoadBtn = document.getElementById('force-load-btn');
-    const cancelLoadBtn = document.getElementById('cancel-load-btn');
-    
-    // Auto-clicker elements
-    const startAutoClickerBtn = document.getElementById('start-auto-clicker');
-    const stopAutoClickerBtn = document.getElementById('stop-auto-clicker');
-    const boostAutoClickerBtn = document.getElementById('boost-auto-clicker');
-    const autoClickerStatusEl = document.getElementById('auto-clicker-status');
-    const autoClickerSpeedEl = document.getElementById('auto-clicker-speed');
-    const totalAutoClicksEl = document.getElementById('total-auto-clicks');
-    
-    // Multiplier elements
-    const multiplierContainer = document.getElementById('multiplier-container');
-    const totalMultiplierEl = document.getElementById('total-multiplier');
-    const nextMultiplierCostEl = document.getElementById('next-multiplier-cost');
+    const elements = {
+        views: document.getElementById('views'),
+        viewsPerClick: document.getElementById('views-per-click'),
+        viewsPerSecond: document.getElementById('views-per-second'),
+        followers: document.getElementById('followers'),
+        coins: document.getElementById('coins'),
+        prestige: document.getElementById('prestige'),
+        streak: document.getElementById('streak'),
+        multiplier: document.getElementById('multiplier'),
+        streakDays: document.getElementById('streak-days'),
+        streakProgress: document.getElementById('streak-progress'),
+        clickButton: document.getElementById('click-button'),
+        clickEffects: document.getElementById('click-effects'),
+        upgradesContainer: document.getElementById('upgrades-container'),
+        achievementsContainer: document.getElementById('achievements-container'),
+        multiplierContainer: document.getElementById('multiplier-container'),
+        totalMultiplier: document.getElementById('total-multiplier'),
+        nextMultiplierCost: document.getElementById('next-multiplier-cost'),
+        multiplierBonus: document.getElementById('multiplier-bonus'),
+        totalClicks: document.getElementById('total-clicks'),
+        playTime: document.getElementById('play-time'),
+        autoClickerStatus: document.getElementById('auto-clicker-status'),
+        autoClickerSpeed: document.getElementById('auto-clicker-speed'),
+        totalAutoClicks: document.getElementById('total-auto-clicks'),
+        versionBadge: document.getElementById('version-badge'),
+        cookieDisplay: document.getElementById('cookie-display'),
+        notification: document.getElementById('notification'),
+        notificationText: document.getElementById('notification-text')
+    };
 
-    // ==================== ADVANCED ENCRYPTION SYSTEM ====================
+    // Tab Management
+    function initTabs() {
+        const tabs = document.querySelectorAll('.tab');
+        const tabContents = document.querySelectorAll('.tab-content');
+        
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                const tabId = tab.dataset.tab;
+                
+                // Update active tab
+                tabs.forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                
+                // Show corresponding content
+                tabContents.forEach(content => {
+                    content.classList.remove('active');
+                    if (content.id === `${tabId}-tab`) {
+                        content.classList.add('active');
+                    }
+                });
+            });
+        });
+    }
+
+    // Particle Background
+    function createParticles() {
+        const particlesContainer = document.getElementById('particles');
+        const particleCount = 50;
+        
+        for (let i = 0; i < particleCount; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'particle';
+            
+            // Random properties
+            const size = Math.random() * 3 + 1;
+            const left = Math.random() * 100;
+            const animationDuration = Math.random() * 30 + 20;
+            const animationDelay = Math.random() * 10;
+            const color = Math.random() > 0.5 ? '25F4EE' : 'FE2C55';
+            
+            particle.style.width = `${size}px`;
+            particle.style.height = `${size}px`;
+            particle.style.left = `${left}vw`;
+            particle.style.animationDuration = `${animationDuration}s`;
+            particle.style.animationDelay = `${animationDelay}s`;
+            particle.style.backgroundColor = `#${color}`;
+            particle.style.opacity = Math.random() * 0.5 + 0.1;
+            
+            particlesContainer.appendChild(particle);
+        }
+    }
+
+    // Enhanced Encryption (simplified for example)
     const encryption = {
-        // Generate a complex encryption key based on game state and version
-        generateKey: () => {
-            const baseKey = "TK_CLICKER_SECURE_v";
-            const versionKey = gameState.gameVersion.replace(/\./g, '_');
-            const randomPart = Math.random().toString(36).substring(2, 20);
-            const timePart = Date.now().toString(36);
-            return baseKey + versionKey + "_" + randomPart + timePart;
-        },
-        
-        // Advanced XOR encryption with version-specific algorithm
-        encrypt: (data, key) => {
-            let encrypted = "";
-            const dataStr = JSON.stringify(data);
-            
-            // Add version, salt, and metadata
-            const saltedData = {
-                version: data.gameVersion,
-                data: dataStr,
-                timestamp: Date.now(),
-                salt: Math.random().toString(36).substring(2, 25),
-                checksum: this.generateChecksum(dataStr + data.gameVersion)
+        generateSaveCode: () => {
+            const data = {
+                ...gameState,
+                securityHash: Date.now().toString(36),
+                lastSaveDate: new Date().toISOString()
             };
-            
-            const saltedStr = JSON.stringify(saltedData);
-            
-            // Version-specific encryption algorithm
-            const algorithmVersion = data.gameVersion.split('.')[1]; // Month determines algorithm
-            
-            // Multiple encryption passes
-            for (let i = 0; i < saltedStr.length; i++) {
-                let charCode = saltedStr.charCodeAt(i);
-                
-                // First XOR with key
-                charCode = charCode ^ key.charCodeAt(i % key.length);
-                
-                // Version-specific transformation (changes monthly)
-                if (algorithmVersion % 2 === 0) {
-                    // Even month algorithm
-                    charCode = charCode ^ (i * 73);
-                    charCode = (charCode + 137) % 256;
-                } else {
-                    // Odd month algorithm
-                    charCode = charCode ^ (i * 37);
-                    charCode = (charCode * 3) % 256;
-                }
-                
-                // Additional transformation based on position
-                charCode = charCode ^ (key.length % 256);
-                
-                encrypted += String.fromCharCode(charCode);
-            }
-            
-            // Convert to base64 and add version header
-            const base64Encoded = btoa(encrypted);
-            return `TKV2_${data.gameVersion}_${Date.now()}_${base64Encoded}`;
+            return `TKV2_${gameState.gameVersion}_${Date.now()}_${btoa(JSON.stringify(data))}`;
         },
         
-        // Decryption with version validation
-        decrypt: (encryptedData, key) => {
+        parseSaveCode: (code) => {
             try {
-                // Extract version and encrypted data
-                const parts = encryptedData.split('_');
-                if (parts.length < 4 || !parts[0].startsWith('TKV2')) {
-                    throw new Error("Invalid save code format");
-                }
+                const parts = code.split('_');
+                if (parts.length < 4) return null;
                 
                 const version = parts[1];
                 const base64Data = parts.slice(3).join('_');
-                
-                // Decode from base64
-                const decoded = atob(base64Data);
-                
-                // Version-specific decryption algorithm
-                const algorithmVersion = version.split('.')[1];
-                
-                // Reverse encryption
-                let decrypted = "";
-                for (let i = 0; i < decoded.length; i++) {
-                    let charCode = decoded.charCodeAt(i);
-                    
-                    // Reverse additional transformation
-                    charCode = charCode ^ (key.length % 256);
-                    
-                    // Version-specific reverse transformation
-                    if (algorithmVersion % 2 === 0) {
-                        // Even month algorithm reverse
-                        charCode = (charCode - 137 + 256) % 256;
-                        charCode = charCode ^ (i * 73);
-                    } else {
-                        // Odd month algorithm reverse
-                        charCode = (charCode * 171) % 256; // 171 is modular inverse of 3 mod 256
-                        charCode = charCode ^ (i * 37);
-                    }
-                    
-                    // Reverse XOR with key
-                    charCode = charCode ^ key.charCodeAt(i % key.length);
-                    
-                    decrypted += String.fromCharCode(charCode);
-                }
-                
-                // Parse and validate
-                const parsed = JSON.parse(decrypted);
-                
-                // Verify checksum includes version
-                const expectedChecksum = this.generateChecksum(parsed.data + parsed.version);
-                if (parsed.checksum !== expectedChecksum) {
-                    throw new Error("Save data corrupted or tampered with!");
-                }
-                
-                return JSON.parse(parsed.data);
-            } catch (error) {
-                console.error("Decryption failed:", error);
-                return null;
-            }
-        },
-        
-        // Generate checksum to detect tampering
-        generateChecksum: (str) => {
-            let hash = 0;
-            for (let i = 0; i < str.length; i++) {
-                const char = str.charCodeAt(i);
-                hash = ((hash << 7) - hash) + char;
-                hash = hash & 0xFFFFFFFF; // Convert to 32-bit integer
-                hash = hash ^ (i * 13); // Additional mixing
-            }
-            return Math.abs(hash).toString(36) + "_" + str.length.toString(36);
-        },
-        
-        // Generate a secure save code (cookie)
-        generateSaveCode: () => {
-            const key = this.generateKey();
-            const encrypted = this.encrypt(gameState, key);
-            
-            // Update game state with security hash
-            gameState.securityHash = this.generateChecksum(encrypted);
-            gameState.lastSaveDate = new Date().toISOString();
-            
-            return encrypted;
-        },
-        
-        // Parse and validate save code with version checking
-        parseSaveCode: (code) => {
-            try {
-                // For backward compatibility, use version-based key
-                const parts = code.split('_');
-                if (parts.length < 4) {
-                    throw new Error("Invalid save code");
-                }
-                
-                const version = parts[1];
-                const key = `TK_CLICKER_SECURE_v${version.replace(/\./g, '_')}_FIXED_KEY`;
-                
-                const decrypted = this.decrypt(code, key);
-                if (!decrypted) {
-                    throw new Error("Decryption failed");
-                }
+                const data = JSON.parse(atob(base64Data));
                 
                 return {
-                    data: decrypted,
+                    data: data,
                     version: version
                 };
-            } catch (error) {
-                console.error("Parse failed:", error);
+            } catch {
                 return null;
             }
         }
     };
 
-    // Game initialization
-    function initGame() {
-        // Update version badge
-        versionBadge.textContent = `v${VERSION_MANAGER.CURRENT_VERSION}`;
-        versionBadge.title = VERSION_MANAGER.getVersionName(VERSION_MANAGER.CURRENT_VERSION);
-        
-        // Initialize multipliers
-        initializeMultipliers();
-        
-        // Try to load from localStorage first
-        const savedCode = localStorage.getItem('tokClickerSaveCode');
-        if (savedCode) {
-            try {
-                const result = encryption.parseSaveCode(savedCode);
-                if (result) {
-                    const loadedState = result.data;
-                    const saveVersion = result.version;
-                    
-                    // Check version compatibility
-                    if (!VERSION_MANAGER.isVersionSupported(saveVersion)) {
-                        showVersionWarning(saveVersion, "local storage");
-                        return;
-                    }
-                    
-                    gameState = loadedState;
-                    
-                    // Ensure multipliers array exists
-                    if (!gameState.multipliers || gameState.multipliers.length === 0) {
-                        initializeMultipliers();
-                    }
-                    
-                    showNotification("Game loaded from local storage!", "success");
-                }
-            } catch (e) {
-                console.warn("Failed to load from localStorage:", e);
-                showNotification("Could not load save from local storage", "warning");
-            }
-        }
-        
-        // Check daily streak
-        checkDailyStreak();
-        
-        // Set up game loop
-        setInterval(gameLoop, 1000);
-        
-        // Initialize displays
-        updateDisplay();
-        renderUpgrades();
-        renderAchievements();
-        renderMultipliers();
-        updateAutoClickerDisplay();
-        
-        // Set up event listeners
-        setupEventListeners();
-        
-        // Start auto-save interval
-        setInterval(autoSave, 30000);
-        
-        // Initialize game time tracking
-        setInterval(() => {
-            gameState.playTime++;
-        }, 1000);
-    }
-
-    // Show version warning modal
-    function showVersionWarning(saveVersion, source) {
-        const monthsDiff = VERSION_MANAGER.getMonthsDifference(saveVersion, VERSION_MANAGER.CURRENT_VERSION);
-        
-        saveVersionEl.textContent = `${saveVersion} (${VERSION_MANAGER.getVersionName(saveVersion)})`;
-        currentVersionEl.textContent = `${VERSION_MANAGER.CURRENT_VERSION} (${VERSION_MANAGER.getVersionName(VERSION_MANAGER.CURRENT_VERSION)})`;
-        
-        if (monthsDiff >= 1) {
-            versionWarningText.innerHTML = `
-                This save file is <strong>${monthsDiff} month${monthsDiff > 1 ? 's' : ''} outdated</strong>!<br>
-                From: ${source}
-            `;
-        } else {
-            versionWarningText.innerHTML = `
-                This save file is from an outdated version!<br>
-                From: ${source}
-            `;
-        }
-        
-        versionModal.style.display = 'flex';
-    }
-
-    // Game loop
-    function gameLoop() {
-        // Passive income
-        gameState.views += gameState.viewsPerSecond * calculateTotalMultiplier();
-        
-        // Update display
-        updateDisplay();
-        
-        // Check achievements
-        checkAchievements();
-    }
-
-    // Handle click on TikTok logo
-    function handleClick(event) {
-        // Calculate position for effect
-        const rect = clickButton.getBoundingClientRect();
-        const x = event.clientX - rect.left;
-        const y = event.clientY - rect.top;
-        
-        // Create click effect
-        const effect = document.createElement('div');
-        effect.className = 'click-effect';
-        effect.style.left = x + 'px';
-        effect.style.top = y + 'px';
-        clickEffects.appendChild(effect);
-        
-        // Remove effect after animation
-        setTimeout(() => {
-            effect.remove();
-        }, 800);
-        
-        // Add views with multiplier
-        const totalMultiplier = calculateTotalMultiplier();
-        const viewsGained = gameState.viewsPerClick * totalMultiplier;
-        gameState.views += viewsGained;
-        gameState.totalClicks++;
-        
-        // Random chance for followers and coins
-        if (Math.random() < 0.15) {
-            gameState.followers += Math.floor(totalMultiplier);
-        }
-        
-        if (Math.random() < 0.05) {
-            gameState.coins += Math.floor(totalMultiplier * 2);
-        }
-        
-        // Update display
-        updateDisplay();
-        
-        // Check for achievement progress
-        checkAchievements();
-    }
-
-    // Calculate total multiplier from all sources
+    // Game Functions
     function calculateTotalMultiplier() {
         let total = gameState.multiplier;
+        if (gameState.shop.premium.bought) total += 0.5;
         
-        // Add shop premium multiplier
-        if (gameState.shop.premium.bought) {
-            total += 0.5;
-        }
-        
-        // Add purchased multipliers
         const purchasedMultipliers = gameState.multipliers.filter(m => m.bought);
         purchasedMultipliers.forEach(m => {
             total *= m.multiplier;
@@ -1466,35 +1615,38 @@
         return total;
     }
 
-    // Update all display elements
     function updateDisplay() {
         const totalMultiplier = calculateTotalMultiplier();
         
-        viewsEl.textContent = formatNumber(gameState.views);
-        viewsPerClickEl.textContent = formatNumber(gameState.viewsPerClick * totalMultiplier);
-        viewsPerSecondEl.textContent = formatNumber(gameState.viewsPerSecond * totalMultiplier);
-        followersEl.textContent = formatNumber(gameState.followers);
-        coinsEl.textContent = formatNumber(gameState.coins);
-        prestigeEl.textContent = gameState.prestige;
-        streakEl.textContent = gameState.streak;
-        multiplierEl.textContent = totalMultiplier.toFixed(2) + 'x';
-        totalMultiplierEl.textContent = totalMultiplier.toFixed(2) + 'x';
+        elements.views.textContent = formatNumber(gameState.views);
+        elements.viewsPerClick.textContent = formatNumber(gameState.viewsPerClick * totalMultiplier);
+        elements.viewsPerSecond.textContent = formatNumber(gameState.viewsPerSecond * totalMultiplier);
+        elements.followers.textContent = formatNumber(gameState.followers);
+        elements.coins.textContent = formatNumber(gameState.coins);
+        elements.prestige.textContent = gameState.prestige;
+        elements.streak.textContent = gameState.streak;
+        elements.multiplier.textContent = totalMultiplier.toFixed(2) + 'x';
+        elements.totalMultiplier.textContent = totalMultiplier.toFixed(2) + 'x';
+        elements.multiplierBonus.textContent = totalMultiplier.toFixed(2) + 'x';
+        elements.totalClicks.textContent = formatNumber(gameState.totalClicks);
+        elements.playTime.textContent = formatTime(gameState.playTime);
         
-        // Update streak progress
+        // Update streak
         const progress = (gameState.streak % 7) * (100 / 7);
-        streakProgressEl.style.width = progress + '%';
-        streakDaysEl.textContent = (gameState.streak % 7) + '/7';
+        elements.streakProgress.style.width = progress + '%';
+        elements.streakDays.textContent = `${gameState.streak % 7}/7 days`;
         
         // Update next multiplier cost
         const nextMultiplier = gameState.multipliers.find(m => !m.bought);
-        if (nextMultiplier) {
-            nextMultiplierCostEl.textContent = formatNumber(nextMultiplier.cost);
-        } else {
-            nextMultiplierCostEl.textContent = "MAX";
-        }
+        elements.nextMultiplierCost.textContent = nextMultiplier ? formatNumber(nextMultiplier.cost) : "MAX";
+        
+        // Update auto-clicker display
+        elements.autoClickerStatus.textContent = gameState.autoClicker.active ? "ON" : "OFF";
+        elements.autoClickerStatus.style.color = gameState.autoClicker.active ? "#00FF00" : "#FF0000";
+        elements.autoClickerSpeed.textContent = gameState.autoClicker.speed.toFixed(1) + " CPS";
+        elements.totalAutoClicks.textContent = formatNumber(gameState.autoClicker.totalAutoClicks);
     }
 
-    // Format numbers with abbreviations
     function formatNumber(num) {
         if (num >= 1e12) return (num / 1e12).toFixed(2) + 'T';
         if (num >= 1e9) return (num / 1e9).toFixed(2) + 'B';
@@ -1503,40 +1655,161 @@
         return Math.floor(num);
     }
 
-    // Render upgrades
-    function renderUpgrades() {
-        upgradesContainer.innerHTML = '';
+    function formatTime(seconds) {
+        const hours = Math.floor(seconds / 3600);
+        const minutes = Math.floor((seconds % 3600) / 60);
+        const secs = seconds % 60;
         
-        Object.keys(gameState.upgrades).forEach(key => {
-            const upgrade = gameState.upgrades[key];
-            const canAfford = gameState.views >= upgrade.cost;
+        if (hours > 0) return `${hours}h ${minutes}m`;
+        if (minutes > 0) return `${minutes}m ${secs}s`;
+        return `${secs}s`;
+    }
+
+    function showNotification(message, type = "success") {
+        const icons = {
+            success: "fa-check-circle",
+            error: "fa-exclamation-circle",
+            warning: "fa-exclamation-triangle",
+            info: "fa-info-circle"
+        };
+        
+        elements.notification.querySelector('.notification-icon').className = `fas ${icons[type] || icons.success} notification-icon`;
+        elements.notificationText.textContent = message;
+        
+        elements.notification.classList.add('show');
+        setTimeout(() => {
+            elements.notification.classList.remove('show');
+        }, 3000);
+    }
+
+    // Click Handler
+    function handleClick(event) {
+        const rect = elements.clickButton.getBoundingClientRect();
+        const x = event.clientX - rect.left;
+        const y = event.clientY - rect.top;
+        
+        // Visual effect
+        const effect = document.createElement('div');
+        effect.className = 'click-effect';
+        effect.style.left = x + 'px';
+        effect.style.top = y + 'px';
+        elements.clickEffects.appendChild(effect);
+        setTimeout(() => effect.remove(), 1000);
+        
+        // Game logic
+        const totalMultiplier = calculateTotalMultiplier();
+        const viewsGained = gameState.viewsPerClick * totalMultiplier;
+        gameState.views += viewsGained;
+        gameState.totalClicks++;
+        
+        if (Math.random() < 0.15) gameState.followers += Math.floor(totalMultiplier);
+        if (Math.random() < 0.05) gameState.coins += Math.floor(totalMultiplier * 2);
+        
+        updateDisplay();
+    }
+
+    // Auto-clicker functions
+    function startAutoClicker() {
+        if (gameState.autoClicker.active) return;
+        
+        gameState.autoClicker.active = true;
+        gameState.autoClicker.interval = setInterval(() => {
+            const totalMultiplier = calculateTotalMultiplier();
+            gameState.views += gameState.viewsPerClick * totalMultiplier;
+            gameState.totalClicks++;
+            gameState.autoClicker.totalAutoClicks++;
             
+            if (Math.random() < 0.1) gameState.followers += Math.floor(totalMultiplier);
+            if (Math.random() < 0.02) gameState.coins += Math.floor(totalMultiplier);
+            
+            updateDisplay();
+        }, 1000 / gameState.autoClicker.speed);
+        
+        showNotification("Auto-clicker started! (" + gameState.autoClicker.speed + " CPS)", "success");
+    }
+
+    function stopAutoClicker() {
+        if (!gameState.autoClicker.active) return;
+        
+        gameState.autoClicker.active = false;
+        clearInterval(gameState.autoClicker.interval);
+        gameState.autoClicker.interval = null;
+        
+        showNotification("Auto-clicker stopped!", "info");
+    }
+
+    function boostAutoClicker() {
+        if (gameState.coins >= 100) {
+            gameState.coins -= 100;
+            gameState.autoClicker.speed = 3.8;
+            gameState.autoClicker.boosted = true;
+            
+            if (gameState.autoClicker.active) {
+                stopAutoClicker();
+                startAutoClicker();
+            }
+            
+            showNotification("Auto-clicker boosted to 3.8 CPS for 1 hour!", "success");
+            
+            setTimeout(() => {
+                gameState.autoClicker.speed = 1.9;
+                gameState.autoClicker.boosted = false;
+                if (gameState.autoClicker.active) {
+                    stopAutoClicker();
+                    startAutoClicker();
+                }
+                showNotification("Auto-clicker boost expired!", "info");
+            }, 60 * 60 * 1000);
+        } else {
+            showNotification("Need 100 coins to boost auto-clicker!", "error");
+        }
+    }
+
+    // Render Functions
+    function renderUpgrades() {
+        elements.upgradesContainer.innerHTML = '';
+        
+        Object.entries(gameState.upgrades).forEach(([key, upgrade]) => {
+            const canAfford = gameState.views >= upgrade.cost;
             const upgradeEl = document.createElement('div');
             upgradeEl.className = 'upgrade-card';
             upgradeEl.innerHTML = `
-                <div class="upgrade-icon">${upgrade.icon}</div>
-                <div class="upgrade-name">${upgrade.name}</div>
-                <div class="upgrade-desc">${upgrade.desc}</div>
-                <div class="upgrade-cost">Cost: ${formatNumber(upgrade.cost)} views</div>
-                <div class="upgrade-level">Level: ${upgrade.level}</div>
+                <div class="card-icon">${upgrade.icon}</div>
+                <div class="card-title">${upgrade.name} <span style="color: var(--tiktok-teal);">Lv.${upgrade.level}</span></div>
+                <div class="card-desc">${upgrade.desc}</div>
+                <div class="card-cost">${formatNumber(upgrade.cost)} views</div>
+                <button class="btn ${canAfford ? 'btn-primary' : 'btn-secondary'} btn-full" 
+                        onclick="purchaseUpgrade('${key}')" 
+                        ${!canAfford ? 'disabled' : ''}>
+                    ${canAfford ? 'UPGRADE' : 'NEED MORE VIEWS'}
+                </button>
             `;
             
-            if (canAfford) {
-                upgradeEl.style.cursor = 'pointer';
-                upgradeEl.onclick = () => purchaseUpgrade(key);
-            } else {
-                upgradeEl.style.opacity = '0.6';
-                upgradeEl.style.cursor = 'not-allowed';
-            }
-            
-            upgradesContainer.appendChild(upgradeEl);
+            if (!canAfford) upgradeEl.style.opacity = '0.7';
+            elements.upgradesContainer.appendChild(upgradeEl);
         });
     }
 
-    // Purchase upgrade
-    function purchaseUpgrade(upgradeKey) {
-        const upgrade = gameState.upgrades[upgradeKey];
+    function renderMultipliers() {
+        elements.multiplierContainer.innerHTML = '';
         
+        gameState.multipliers.forEach((multiplier, index) => {
+            const canAfford = gameState.coins >= multiplier.cost && !multiplier.bought;
+            const btn = document.createElement('button');
+            btn.className = `multiplier-btn ${multiplier.bought ? 'active' : ''} ${!canAfford && !multiplier.bought ? 'disabled' : ''}`;
+            btn.textContent = `${multiplier.level}x`;
+            btn.title = `Cost: ${formatNumber(multiplier.cost)} coins`;
+            
+            if (!multiplier.bought && canAfford) {
+                btn.onclick = () => purchaseMultiplier(index);
+            }
+            
+            elements.multiplierContainer.appendChild(btn);
+        });
+    }
+
+    function purchaseUpgrade(key) {
+        const upgrade = gameState.upgrades[key];
         if (gameState.views >= upgrade.cost) {
             gameState.views -= upgrade.cost;
             upgrade.level += 1;
@@ -1549,31 +1822,8 @@
         }
     }
 
-    // Render multipliers (1x to 100x)
-    function renderMultipliers() {
-        multiplierContainer.innerHTML = '';
-        
-        gameState.multipliers.forEach((multiplier, index) => {
-            const multiplierBtn = document.createElement('button');
-            multiplierBtn.className = `multiplier-btn ${multiplier.bought ? 'active' : ''} ${!multiplier.bought && gameState.coins < multiplier.cost ? 'disabled' : ''}`;
-            multiplierBtn.textContent = `${multiplier.level}x`;
-            multiplierBtn.title = `Cost: ${formatNumber(multiplier.cost)} coins`;
-            
-            if (!multiplier.bought && gameState.coins >= multiplier.cost) {
-                multiplierBtn.style.cursor = 'pointer';
-                multiplierBtn.onclick = () => purchaseMultiplier(index);
-            } else if (!multiplier.bought) {
-                multiplierBtn.style.cursor = 'not-allowed';
-            }
-            
-            multiplierContainer.appendChild(multiplierBtn);
-        });
-    }
-
-    // Purchase multiplier
     function purchaseMultiplier(index) {
         const multiplier = gameState.multipliers[index];
-        
         if (!multiplier.bought && gameState.coins >= multiplier.cost) {
             gameState.coins -= multiplier.cost;
             multiplier.bought = true;
@@ -1581,244 +1831,15 @@
             updateDisplay();
             renderMultipliers();
             showNotification(`Purchased ${multiplier.level}x multiplier!`, "success");
-            
-            // Check achievement
-            checkMultiplierAchievement();
         }
     }
 
-    // Check multiplier achievement
-    function checkMultiplierAchievement() {
-        const totalMultiplier = calculateTotalMultiplier();
-        if (totalMultiplier >= 50 && !gameState.achievements.multiplierKing.unlocked) {
-            gameState.achievements.multiplierKing.unlocked = true;
-            gameState.coins += gameState.achievements.multiplierKing.reward;
-            renderAchievements();
-            showNotification("Achievement unlocked: Multiplier King!", "success");
-        }
-    }
-
-    // Auto-clicker functions
-    function startAutoClicker() {
-        if (gameState.autoClicker.active) return;
-        
-        gameState.autoClicker.active = true;
-        gameState.autoClicker.interval = setInterval(() => {
-            // Simulate a click
-            const totalMultiplier = calculateTotalMultiplier();
-            const viewsGained = gameState.viewsPerClick * totalMultiplier;
-            gameState.views += viewsGained;
-            gameState.totalClicks++;
-            gameState.autoClicker.totalAutoClicks++;
-            
-            // Random rewards
-            if (Math.random() < 0.1) {
-                gameState.followers += Math.floor(totalMultiplier);
-            }
-            if (Math.random() < 0.02) {
-                gameState.coins += Math.floor(totalMultiplier);
-            }
-            
-            updateDisplay();
-            updateAutoClickerDisplay();
-            
-            // Check auto-clicker achievement
-            if (gameState.autoClicker.totalAutoClicks >= 100000 && !gameState.achievements.autoClickerPro.unlocked) {
-                gameState.achievements.autoClickerPro.unlocked = true;
-                gameState.coins += gameState.achievements.autoClickerPro.reward;
-                renderAchievements();
-                showNotification("Achievement unlocked: Auto-Clicker Pro!", "success");
-            }
-            
-        }, 1000 / gameState.autoClicker.speed); // Convert CPS to interval
-        
-        updateAutoClickerDisplay();
-        showNotification("Auto-clicker started! (" + gameState.autoClicker.speed + " CPS)", "success");
-    }
-
-    function stopAutoClicker() {
-        if (!gameState.autoClicker.active) return;
-        
-        gameState.autoClicker.active = false;
-        if (gameState.autoClicker.interval) {
-            clearInterval(gameState.autoClicker.interval);
-            gameState.autoClicker.interval = null;
-        }
-        
-        updateAutoClickerDisplay();
-        showNotification("Auto-clicker stopped!", "info");
-    }
-
-    function boostAutoClicker() {
-        if (gameState.autoClicker.boosted) {
-            showNotification("Auto-clicker already boosted!", "warning");
-            return;
-        }
-        
-        if (gameState.coins >= 100) {
-            gameState.coins -= 100;
-            gameState.autoClicker.speed = 3.8; // Double speed
-            gameState.autoClicker.boosted = true;
-            
-            // Restart auto-clicker with new speed
-            if (gameState.autoClicker.active) {
-                stopAutoClicker();
-                startAutoClicker();
-            }
-            
-            updateDisplay();
-            updateAutoClickerDisplay();
-            showNotification("Auto-clicker boosted to 3.8 CPS for 1 hour!", "success");
-            
-            // Reset boost after 1 hour
-            setTimeout(() => {
-                if (gameState.autoClicker.boosted) {
-                    gameState.autoClicker.speed = 1.9;
-                    gameState.autoClicker.boosted = false;
-                    
-                    if (gameState.autoClicker.active) {
-                        stopAutoClicker();
-                        startAutoClicker();
-                    }
-                    
-                    updateAutoClickerDisplay();
-                    showNotification("Auto-clicker boost expired!", "info");
-                }
-            }, 60 * 60 * 1000); // 1 hour
-        } else {
-            showNotification("Need 100 coins to boost auto-clicker!", "error");
-        }
-    }
-
-    function updateAutoClickerDisplay() {
-        autoClickerStatusEl.textContent = gameState.autoClicker.active ? "ON" : "OFF";
-        autoClickerStatusEl.style.color = gameState.autoClicker.active ? "#00FF00" : "#FF0000";
-        autoClickerSpeedEl.textContent = gameState.autoClicker.speed.toFixed(1) + " CPS";
-        totalAutoClicksEl.textContent = formatNumber(gameState.autoClicker.totalAutoClicks);
-        
-        // Update button states
-        startAutoClickerBtn.disabled = gameState.autoClicker.active;
-        stopAutoClickerBtn.disabled = !gameState.autoClicker.active;
-        boostAutoClickerBtn.disabled = gameState.autoClicker.boosted;
-    }
-
-    // Render achievements
-    function renderAchievements() {
-        achievementsContainer.innerHTML = '';
-        
-        Object.keys(gameState.achievements).forEach(key => {
-            const achievement = gameState.achievements[key];
-            
-            const achievementEl = document.createElement('div');
-            achievementEl.className = `achievement-card ${achievement.unlocked ? 'unlocked' : 'achievement-locked'}`;
-            achievementEl.innerHTML = `
-                <div class="achievement-icon">${achievement.icon}</div>
-                <div class="achievement-info">
-                    <div class="achievement-name">${achievement.name}</div>
-                    <div class="achievement-desc">${achievement.desc}</div>
-                    <div class="achievement-reward">Reward: ${formatNumber(achievement.reward)} coins</div>
-                </div>
-            `;
-            
-            achievementsContainer.appendChild(achievementEl);
-        });
-    }
-
-    // Check and unlock achievements
-    function checkAchievements() {
-        let newAchievements = false;
-        
-        // Check each achievement
-        if (!gameState.achievements.viral.unlocked && gameState.views >= 10000) {
-            gameState.achievements.viral.unlocked = true;
-            gameState.coins += gameState.achievements.viral.reward;
-            newAchievements = true;
-        }
-        
-        if (!gameState.achievements.trending.unlocked && gameState.views >= 100000) {
-            gameState.achievements.trending.unlocked = true;
-            gameState.coins += gameState.achievements.trending.reward;
-            newAchievements = true;
-        }
-        
-        if (!gameState.achievements.famous.unlocked && gameState.views >= 1000000) {
-            gameState.achievements.famous.unlocked = true;
-            gameState.coins += gameState.achievements.famous.reward;
-            newAchievements = true;
-        }
-        
-        if (!gameState.achievements.influencer.unlocked && gameState.followers >= 10000) {
-            gameState.achievements.influencer.unlocked = true;
-            gameState.coins += gameState.achievements.influencer.reward;
-            newAchievements = true;
-        }
-        
-        if (!gameState.achievements.millionaire.unlocked && gameState.followers >= 1000000) {
-            gameState.achievements.millionaire.unlocked = true;
-            gameState.coins += gameState.achievements.millionaire.reward;
-            newAchievements = true;
-        }
-        
-        if (!gameState.achievements.clickMaster.unlocked && gameState.totalClicks >= 10000) {
-            gameState.achievements.clickMaster.unlocked = true;
-            gameState.coins += gameState.achievements.clickMaster.reward;
-            newAchievements = true;
-        }
-        
-        if (!gameState.achievements.dailyPlayer.unlocked && gameState.streak >= 7) {
-            gameState.achievements.dailyPlayer.unlocked = true;
-            gameState.coins += gameState.achievements.dailyPlayer.reward;
-            newAchievements = true;
-        }
-        
-        if (newAchievements) {
-            renderAchievements();
-            showNotification("New achievement unlocked!", "success");
-        }
-    }
-
-    // Check daily streak
-    function checkDailyStreak() {
-        const today = new Date().toDateString();
-        
-        if (!gameState.lastPlayDate) {
-            gameState.lastPlayDate = today;
-            gameState.streak = 1;
-        } else if (gameState.lastPlayDate !== today) {
-            const lastPlay = new Date(gameState.lastPlayDate);
-            const currentDate = new Date();
-            const diffTime = Math.abs(currentDate - lastPlay);
-            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-            
-            if (diffDays === 1) {
-                gameState.streak++;
-                showNotification(`Daily streak: ${gameState.streak} days!`, "info");
-            } else if (diffDays > 1) {
-                gameState.streak = 1;
-                showNotification("Streak broken! Starting new streak.", "warning");
-            }
-            
-            gameState.lastPlayDate = today;
-        }
-        
-        // Bonus multiplier for streak
-        gameState.multiplier = 1 + (gameState.streak * 0.05);
-    }
-
-    // Buy shop item
     function buyShopItem(item) {
         const shopItem = gameState.shop[item];
-        
         if (gameState.coins >= shopItem.cost && !shopItem.bought) {
             gameState.coins -= shopItem.cost;
             shopItem.bought = true;
-            
-            if (item === 'premium') {
-                showNotification(`Purchased ${shopItem.name}! (+0.5x to all multipliers)`, "success");
-            } else {
-                showNotification(`Purchased ${shopItem.name}!`, "success");
-            }
-            
+            showNotification(`Purchased ${shopItem.name}!`, "success");
             updateDisplay();
         } else if (shopItem.bought) {
             showNotification("You already own this item!", "warning");
@@ -1827,437 +1848,169 @@
         }
     }
 
-    // FIXED: Save game function with guaranteed file download
+    // Save/Load Functions
     function saveGame() {
         const saveCode = encryption.generateSaveCode();
-        
-        // Save to localStorage
         localStorage.setItem('tokClickerSaveCode', saveCode);
         
-        // Display the save code
-        cookieDisplay.textContent = saveCode.substring(0, 150) + "...";
+        // Display code
+        elements.cookieDisplay.textContent = saveCode.substring(0, 150) + "...";
         
-        // Create and download file - GUARANTEED WORKING METHOD
-        downloadFile(saveCode, `tok_clicker_save_${Date.now()}.tok`);
+        // Download file
+        const blob = new Blob([saveCode], { type: 'text/plain;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `tok_clicker_${Date.now()}.tok`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
         
         showNotification("Game saved and file downloaded!", "success");
     }
 
-    // Universal file download function
-    function downloadFile(content, filename) {
-        // Method 1: Modern Blob API (works in most browsers)
-        try {
-            const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
-            
-            // Create a temporary anchor element
-            const a = document.createElement('a');
-            const url = URL.createObjectURL(blob);
-            
-            a.href = url;
-            a.download = filename;
-            a.style.display = 'none';
-            
-            document.body.appendChild(a);
-            a.click();
-            
-            // Cleanup
-            setTimeout(() => {
-                document.body.removeChild(a);
-                URL.revokeObjectURL(url);
-            }, 100);
-            
-            return true;
-        } catch (error) {
-            console.warn("Blob download failed:", error);
-            
-            // Method 2: Data URL fallback
-            try {
-                const dataUrl = 'data:text/plain;charset=utf-8,' + encodeURIComponent(content);
-                const a = document.createElement('a');
-                a.href = dataUrl;
-                a.download = filename;
-                a.style.display = 'none';
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                return true;
-            } catch (error2) {
-                console.error("Data URL download also failed:", error2);
-                
-                // Method 3: Last resort - open in new window
-                const newWindow = window.open();
-                newWindow.document.write('<pre>' + content + '</pre>');
-                newWindow.document.title = filename;
-                showNotification("Save successful! File opened in new window. Use Ctrl+S to save.", "warning");
-                return false;
-            }
-        }
-    }
-
-    // Auto-save function
-    function autoSave() {
-        const saveCode = encryption.generateSaveCode();
-        localStorage.setItem('tokClickerSaveCode', saveCode);
-        console.log("Game auto-saved");
-    }
-
-    // Load game from file
-    function loadFromFile(file) {
-        const reader = new FileReader();
-        
-        reader.onload = function(e) {
-            try {
-                const saveCode = e.target.result;
-                const result = encryption.parseSaveCode(saveCode);
-                
-                if (result) {
-                    const loadedState = result.data;
-                    const saveVersion = result.version;
-                    
-                    // Check version compatibility
-                    if (!VERSION_MANAGER.isVersionSupported(saveVersion)) {
-                        showVersionWarning(saveVersion, "file upload");
-                        // Store the loaded state for potential force load
-                        window.pendingLoadState = {
-                            state: loadedState,
-                            version: saveVersion,
-                            type: 'file'
-                        };
-                        return;
-                    }
-                    
-                    // Stop auto-clicker before loading new state
-                    if (gameState.autoClicker.active) {
-                        stopAutoClicker();
-                    }
-                    
-                    gameState = loadedState;
-                    
-                    // Ensure multipliers array exists
-                    if (!gameState.multipliers || gameState.multipliers.length === 0) {
-                        initializeMultipliers();
-                    }
-                    
-                    updateDisplay();
-                    renderUpgrades();
-                    renderAchievements();
-                    renderMultipliers();
-                    updateAutoClickerDisplay();
-                    showNotification("Game loaded from file!", "success");
-                    closeLoadModal();
-                } else {
-                    showNotification("Failed to load file: Invalid or corrupted!", "error");
-                }
-            } catch (error) {
-                showNotification("Failed to load file: Invalid format!", "error");
-            }
-        };
-        
-        reader.onerror = function() {
-            showNotification("Error reading file!", "error");
-        };
-        
-        reader.readAsText(file);
-    }
-
-    // Load game from code
     function loadFromCode() {
-        const code = cookieInput.value.trim();
-        
+        const code = document.getElementById('cookie-input').value.trim();
         if (!code) {
             showNotification("Please enter a save code!", "warning");
             return;
         }
         
-        try {
-            const result = encryption.parseSaveCode(code);
-            
-            if (result) {
-                const loadedState = result.data;
-                const saveVersion = result.version;
-                
-                // Check version compatibility
-                if (!VERSION_MANAGER.isVersionSupported(saveVersion)) {
-                    showVersionWarning(saveVersion, "code input");
-                    // Store the loaded state for potential force load
-                    window.pendingLoadState = {
-                        state: loadedState,
-                        version: saveVersion,
-                        type: 'code'
-                    };
-                    return;
-                }
-                
-                // Stop auto-clicker before loading new state
-                if (gameState.autoClicker.active) {
-                    stopAutoClicker();
-                }
-                
-                gameState = loadedState;
-                
-                // Ensure multipliers array exists
-                if (!gameState.multipliers || gameState.multipliers.length === 0) {
-                    initializeMultipliers();
-                }
-                
-                updateDisplay();
-                renderUpgrades();
-                renderAchievements();
-                renderMultipliers();
-                updateAutoClickerDisplay();
-                showNotification("Game loaded from code!", "success");
-                closeLoadModal();
-            } else {
-                showNotification("Invalid save code! Cannot load game.", "error");
-            }
-        } catch (error) {
-            showNotification("Invalid save code format!", "error");
-        }
-    }
-
-    // Force load outdated save
-    function forceLoadOutdatedSave() {
-        if (!window.pendingLoadState) return;
-        
-        const { state, version, type } = window.pendingLoadState;
-        
-        // Stop auto-clicker before loading new state
-        if (gameState.autoClicker.active) {
-            stopAutoClicker();
-        }
-        
-        gameState = state;
-        gameState.gameVersion = VERSION_MANAGER.CURRENT_VERSION; // Update to current version
-        gameState.versionCompatible = false; // Mark as incompatible
-        
-        // Ensure multipliers array exists
-        if (!gameState.multipliers || gameState.multipliers.length === 0) {
+        const result = encryption.parseSaveCode(code);
+        if (result) {
+            // Simple load for demo
+            Object.assign(gameState, result.data);
             initializeMultipliers();
-        }
-        
-        // Fix any missing properties
-        if (!gameState.autoClicker) {
-            gameState.autoClicker = {
-                active: false,
-                speed: 1.9,
-                boosted: false,
-                totalAutoClicks: 0,
-                interval: null
-            };
-        }
-        
-        if (!gameState.multipliers) {
-            initializeMultipliers();
-        }
-        
-        updateDisplay();
-        renderUpgrades();
-        renderAchievements();
-        renderMultipliers();
-        updateAutoClickerDisplay();
-        
-        showNotification(`Game loaded from outdated ${type}! Some features may not work.`, "warning");
-        closeVersionModal();
-        closeLoadModal();
-        
-        // Clear pending state
-        window.pendingLoadState = null;
-    }
-
-    // Reset game
-    function resetGame() {
-        if (confirm("Are you sure you want to reset your game? ALL progress will be lost permanently!")) {
-            // Stop auto-clicker
-            if (gameState.autoClicker.active) {
-                stopAutoClicker();
-            }
-            
-            // Create fresh game state
-            const freshState = {
-                views: 0,
-                viewsPerClick: 1,
-                viewsPerSecond: 0,
-                followers: 0,
-                coins: 0,
-                prestige: 0,
-                streak: 0,
-                lastPlayDate: new Date().toDateString(),
-                multiplier: 1,
-                totalClicks: 0,
-                autoClicker: {
-                    active: false,
-                    speed: 1.9,
-                    boosted: false,
-                    totalAutoClicks: 0,
-                    interval: null
-                },
-                multipliers: [],
-                upgrades: { ...gameState.upgrades },
-                shop: { ...gameState.shop },
-                achievements: { ...gameState.achievements },
-                gameVersion: VERSION_MANAGER.CURRENT_VERSION,
-                creationDate: new Date().toISOString(),
-                lastSaveDate: null,
-                playTime: 0,
-                securityHash: "",
-                versionCompatible: true
-            };
-            
-            // Reset upgrade levels and costs
-            Object.keys(freshState.upgrades).forEach(key => {
-                freshState.upgrades[key].level = 0;
-                if (key === 'phone') freshState.upgrades[key].cost = 50;
-                if (key === 'hashtags') freshState.upgrades[key].cost = 200;
-                if (key === 'editing') freshState.upgrades[key].cost = 500;
-                if (key === 'trends') freshState.upgrades[key].cost = 1000;
-                if (key === 'collab') freshState.upgrades[key].cost = 2500;
-                if (key === 'algorithm') freshState.upgrades[key].cost = 5000;
-                if (key === 'sponsor') freshState.upgrades[key].cost = 15000;
-                if (key === 'verified') freshState.upgrades[key].cost = 50000;
-                if (key === 'team') freshState.upgrades[key].cost = 150000;
-                if (key === 'studio') freshState.upgrades[key].cost = 500000;
-            });
-            
-            // Reset achievements
-            Object.keys(freshState.achievements).forEach(key => {
-                freshState.achievements[key].unlocked = key === 'firstVideo';
-            });
-            
-            // Reset shop
-            Object.keys(freshState.shop).forEach(key => {
-                freshState.shop[key].bought = false;
-            });
-            
-            gameState = freshState;
-            
-            // Initialize multipliers
-            initializeMultipliers();
-            
-            // Clear localStorage
-            localStorage.removeItem('tokClickerSaveCode');
-            
             updateDisplay();
             renderUpgrades();
-            renderAchievements();
             renderMultipliers();
-            updateAutoClickerDisplay();
-            showNotification("Game reset successfully!", "success");
-        }
-    }
-
-    // Show notification
-    function showNotification(message, type = "info") {
-        notificationText.textContent = message;
-        
-        // Set color based on type
-        if (type === "success") {
-            notification.style.background = "linear-gradient(90deg, #25F4EE, #00CC00)";
-        } else if (type === "error") {
-            notification.style.background = "linear-gradient(90deg, #FF416C, #FF4B2B)";
-        } else if (type === "warning") {
-            notification.style.background = "linear-gradient(90deg, #FFD600, #FF9500)";
+            showNotification("Game loaded successfully!", "success");
+            document.getElementById('load-modal').style.display = 'none';
         } else {
-            notification.style.background = "linear-gradient(90deg, var(--tiktok-teal), var(--tiktok-pink))";
+            showNotification("Invalid save code!", "error");
         }
-        
-        notification.classList.add('show');
-        
-        setTimeout(() => {
-            notification.classList.remove('show');
-        }, 3000);
     }
 
-    // Modal functions
-    function openLoadModal() {
-        loadModal.style.display = 'flex';
-        cookieInput.value = '';
-    }
-
-    function closeLoadModal() {
-        loadModal.style.display = 'none';
-    }
-
-    function closeVersionModal() {
-        versionModal.style.display = 'none';
-        window.pendingLoadState = null;
-    }
-
-    // Set up event listeners
+    // Event Listeners
     function setupEventListeners() {
-        // Click button
-        clickButton.addEventListener('click', handleClick);
-        clickButton.addEventListener('touchstart', handleClick, { passive: true });
+        // Click
+        elements.clickButton.addEventListener('click', handleClick);
+        elements.clickButton.addEventListener('touchstart', handleClick, { passive: true });
         
-        // Save button
-        saveBtn.addEventListener('click', saveGame);
+        // Auto-clicker
+        document.getElementById('start-auto-clicker').addEventListener('click', startAutoClicker);
+        document.getElementById('stop-auto-clicker').addEventListener('click', stopAutoClicker);
+        document.getElementById('boost-auto-clicker').addEventListener('click', boostAutoClicker);
         
-        // Load buttons
-        loadFileBtn.addEventListener('click', openLoadModal);
-        loadCookieBtn.addEventListener('click', openLoadModal);
+        // Save/Load
+        document.getElementById('save-btn').addEventListener('click', saveGame);
+        document.getElementById('load-cookie-btn').addEventListener('click', () => {
+            document.getElementById('load-modal').style.display = 'flex';
+        });
+        document.getElementById('load-cookie-confirm').addEventListener('click', loadFromCode);
+        document.getElementById('close-modal').addEventListener('click', () => {
+            document.getElementById('load-modal').style.display = 'none';
+        });
+        
+        // Reset
+        document.getElementById('reset-btn').addEventListener('click', () => {
+            if (confirm("Reset all progress?")) {
+                gameState = {
+                    ...gameState,
+                    views: 0,
+                    viewsPerClick: 1,
+                    viewsPerSecond: 0,
+                    followers: 0,
+                    coins: 0,
+                    prestige: 0,
+                    streak: 0,
+                    totalClicks: 0,
+                    playTime: 0,
+                    autoClicker: { active: false, speed: 1.9, boosted: false, totalAutoClicks: 0, interval: null },
+                    multipliers: [],
+                    lastSaveDate: null
+                };
+                
+                Object.keys(gameState.upgrades).forEach(key => {
+                    gameState.upgrades[key].level = 0;
+                    gameState.upgrades[key].cost = {
+                        phone: 50, hashtags: 200, editing: 500, trends: 1000,
+                        collab: 2500, algorithm: 5000, sponsor: 15000,
+                        verified: 50000, team: 150000, studio: 500000
+                    }[key];
+                });
+                
+                Object.keys(gameState.shop).forEach(key => {
+                    gameState.shop[key].bought = false;
+                });
+                
+                Object.keys(gameState.achievements).forEach(key => {
+                    gameState.achievements[key].unlocked = key === 'firstVideo';
+                });
+                
+                initializeMultipliers();
+                updateDisplay();
+                renderUpgrades();
+                renderMultipliers();
+                showNotification("Game reset!", "info");
+            }
+        });
         
         // File upload
-        loadFileInputBtn.addEventListener('click', () => fileUpload.click());
-        fileUpload.addEventListener('change', (e) => {
+        document.getElementById('load-file-input-btn').addEventListener('click', () => {
+            document.getElementById('file-upload').click();
+        });
+        
+        document.getElementById('file-upload').addEventListener('change', (e) => {
             if (e.target.files[0]) {
-                loadFromFile(e.target.files[0]);
-                fileUpload.value = ''; // Reset file input
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    document.getElementById('cookie-input').value = event.target.result;
+                };
+                reader.readAsText(e.target.files[0]);
             }
-        });
-        
-        // Load from code
-        loadCookieConfirm.addEventListener('click', loadFromCode);
-        
-        // Close modals
-        closeModal.addEventListener('click', closeLoadModal);
-        cancelLoadBtn.addEventListener('click', closeVersionModal);
-        forceLoadBtn.addEventListener('click', forceLoadOutdatedSave);
-        
-        // Reset button
-        resetBtn.addEventListener('click', resetGame);
-        
-        // Auto-clicker buttons
-        startAutoClickerBtn.addEventListener('click', startAutoClicker);
-        stopAutoClickerBtn.addEventListener('click', stopAutoClicker);
-        boostAutoClickerBtn.addEventListener('click', boostAutoClicker);
-        
-        // Close modals when clicking outside
-        loadModal.addEventListener('click', (e) => {
-            if (e.target === loadModal) {
-                closeLoadModal();
-            }
-        });
-        
-        versionModal.addEventListener('click', (e) => {
-            if (e.target === versionModal) {
-                closeVersionModal();
-            }
-        });
-        
-        // Keyboard shortcuts
-        document.addEventListener('keydown', (e) => {
-            if (e.ctrlKey && e.key === 's') {
-                e.preventDefault();
-                saveGame();
-            }
-            if (e.key === 'Escape') {
-                closeLoadModal();
-                closeVersionModal();
-            }
-            // Spacebar to click
-            if (e.key === ' ' && e.target === document.body) {
-                e.preventDefault();
-                // Simulate a click
-                handleClick({ clientX: window.innerWidth / 2, clientY: window.innerHeight / 2 });
-            }
-        });
-        
-        // Prevent context menu on click area
-        clickButton.addEventListener('contextmenu', (e) => {
-            e.preventDefault();
         });
     }
 
-    // Initialize game when page loads
+    // Initialize Game
+    function initGame() {
+        // Version badge
+        elements.versionBadge.textContent = `v${VERSION_MANAGER.CURRENT_VERSION}`;
+        
+        // Initialize systems
+        initializeMultipliers();
+        initTabs();
+        createParticles();
+        
+        // Load from localStorage
+        const saved = localStorage.getItem('tokClickerSaveCode');
+        if (saved) {
+            const result = encryption.parseSaveCode(saved);
+            if (result) {
+                Object.assign(gameState, result.data);
+                showNotification("Game loaded from save!", "success");
+            }
+        }
+        
+        // Setup
+        updateDisplay();
+        renderUpgrades();
+        renderMultipliers();
+        setupEventListeners();
+        
+        // Game loop
+        setInterval(() => {
+            gameState.views += gameState.viewsPerSecond * calculateTotalMultiplier();
+            gameState.playTime++;
+            updateDisplay();
+        }, 1000);
+        
+        // Auto-save
+        setInterval(saveGame, 60000);
+    }
+
+    // Start the game
     window.addEventListener('DOMContentLoaded', initGame);
 </script>
 </html>
